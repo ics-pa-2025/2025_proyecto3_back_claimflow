@@ -1,0 +1,53 @@
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument, Types } from 'mongoose';
+
+export type ReclamoDocument = HydratedDocument<Reclamo>;
+
+@Schema()
+export class Historial {
+    @Prop({ required: true })
+    fecha: Date;
+
+    @Prop({ required: true })
+    accion: string;
+
+    @Prop({ required: true })
+    responsable: string; // Could be a user ID or name
+}
+
+const HistorialSchema = SchemaFactory.createForClass(Historial);
+
+@Schema()
+export class Reclamo {
+    @Prop({ required: true })
+    tipo: string;
+
+    @Prop({ required: true })
+    prioridad: string;
+
+    @Prop({ required: true })
+    criticidad: string;
+
+    @Prop({ required: true })
+    descripcion: string;
+
+    @Prop()
+    evidencia: string; // URL or path to file
+
+    @Prop({ default: 'Pendiente' })
+    estado: string;
+
+    @Prop({ required: true })
+    area: string;
+
+    @Prop({ type: [HistorialSchema], default: [] })
+    historial: Historial[];
+
+    @Prop({ type: Types.ObjectId, ref: 'Cliente', required: true })
+    cliente: Types.ObjectId;
+
+    @Prop({ required: true })
+    proyecto: string; // Name of the project, or could be an ID if we had a Project resource
+}
+
+export const ReclamoSchema = SchemaFactory.createForClass(Reclamo);
