@@ -5,6 +5,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClienteModule } from './cliente/cliente.module';
 import { ReclamoModule } from './reclamo/reclamo.module';
+import { TipoProyectoModule } from './tipo-proyecto/tipo-proyecto.module';
+import { EstadoProyectoModule } from './estado-proyecto/estado-proyecto.module';
+import { ProyectoModule } from './proyecto/proyecto.module';
+import { SeedModule } from './database/seeders/seed.module';
 
 @Module({
   imports: [
@@ -20,6 +24,10 @@ import { ReclamoModule } from './reclamo/reclamo.module';
     }),
     ClienteModule,
     ReclamoModule,
+    TipoProyectoModule,
+    EstadoProyectoModule,
+    ProyectoModule,
+    SeedModule,
   ],
   controllers: [AppController],
   providers: [AppService],
