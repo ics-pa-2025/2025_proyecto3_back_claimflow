@@ -19,8 +19,14 @@ export class Cliente {
     @Prop({ required: true })
     nombre: string;
 
+    @Prop({ required: true })
+    apellido: string;
+
     @Prop({ required: true, unique: true })
     email: string;
+
+    @Prop({ required: true, unique: true })
+    dni: string;
 
     @Prop()
     telefono: string;

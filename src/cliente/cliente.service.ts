@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { ClienteRepository } from './cliente.repository';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 
@@ -6,8 +6,20 @@ import { CreateClienteDto } from './dto/create-cliente.dto';
 export class ClienteService {
     constructor(private readonly clienteRepository: ClienteRepository) { }
 
-    create(createClienteDto: CreateClienteDto) {
-        return this.clienteRepository.create(createClienteDto);
+    async create(createClienteDto: CreateClienteDto) {
+        try {
+            return await this.clienteRepository.create(createClienteDto);
+        } catch (error) {
+            if (error.code === 11000) {
+                if (error.keyPattern.dni) {
+                    throw new ConflictException('Ya existe un cliente con ese DNI');
+                }
+                if (error.keyPattern.email) {
+                    throw new ConflictException('Ya existe un cliente con ese Email');
+                }
+            }
+            throw error;
+        }
     }
 
     findAll() {
