@@ -33,6 +33,9 @@ export class Cliente {
 
     @Prop({ type: [ProyectoSchema], default: [] })
     proyectos: Proyecto[];
+
+    @Prop({ default: null })
+    fechaEliminacion: Date;
 }
 
 export const ClienteSchema = SchemaFactory.createForClass(Cliente);

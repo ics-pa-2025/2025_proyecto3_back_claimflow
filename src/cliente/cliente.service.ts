@@ -1,10 +1,14 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, Inject, forwardRef } from '@nestjs/common';
 import { ClienteRepository } from './cliente.repository';
 import { CreateClienteDto } from './dto/create-cliente.dto';
+import { ProyectoService } from '../proyecto/proyecto.service';
 
 @Injectable()
 export class ClienteService {
-    constructor(private readonly clienteRepository: ClienteRepository) { }
+    constructor(
+        private readonly clienteRepository: ClienteRepository,
+        @Inject(forwardRef(() => ProyectoService)) private readonly proyectoService: ProyectoService
+    ) { }
 
     async create(createClienteDto: CreateClienteDto) {
         try {
@@ -34,7 +38,8 @@ export class ClienteService {
         return this.clienteRepository.update(id, updateClienteDto);
     }
 
-    remove(id: string) {
+    async remove(id: string) {
+        await this.proyectoService.removeClientFromProjects(id);
         return this.clienteRepository.remove(id);
     }
 }

@@ -96,4 +96,8 @@ export class ProyectoService {
     async cambiarEstado(id: string, estadoId: string): Promise<Proyecto> {
         return this.update(id, { estado: estadoId });
     }
+
+    async removeClientFromProjects(clienteId: string): Promise<void> {
+        await this.proyectoModel.updateMany({ clienteId: clienteId }, { $set: { clienteId: null } }).exec();
+    }
 }

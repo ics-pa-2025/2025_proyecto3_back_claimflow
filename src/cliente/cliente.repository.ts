@@ -14,18 +14,18 @@ export class ClienteRepository {
     }
 
     async findAll(): Promise<Cliente[]> {
-        return this.clienteModel.find().exec();
+        return this.clienteModel.find({ fechaEliminacion: null }).exec();
     }
 
     async findOne(id: string): Promise<Cliente | null> {
-        return this.clienteModel.findById(id).exec();
+        return this.clienteModel.findOne({ _id: id, fechaEliminacion: null }).exec();
     }
 
     async update(id: string, updateClienteDto: any): Promise<Cliente | null> {
-        return this.clienteModel.findByIdAndUpdate(id, updateClienteDto, { new: true }).exec();
+        return this.clienteModel.findOneAndUpdate({ _id: id, fechaEliminacion: null }, updateClienteDto, { new: true }).exec();
     }
 
     async remove(id: string): Promise<Cliente | null> {
-        return this.clienteModel.findByIdAndDelete(id).exec();
+        return this.clienteModel.findByIdAndUpdate(id, { fechaEliminacion: new Date() }, { new: true }).exec();
     }
 }
