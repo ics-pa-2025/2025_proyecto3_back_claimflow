@@ -20,8 +20,6 @@ export class ReclamoController {
         })
     }))
     create(@Body() createReclamoDto: CreateReclamoDto, @UploadedFile() file?: any) {
-        console.log('Received Body:', createReclamoDto);
-        console.log('Received File:', file);
         if (file) {
             createReclamoDto.evidencia = file.path;
         }
@@ -39,7 +37,19 @@ export class ReclamoController {
     }
 
     @Patch(':id')
-    update(@Param('id') id: string, @Body() updateReclamoDto: any) {
+    @UseInterceptors(FileInterceptor('file', {
+        storage: diskStorage({
+            destination: './uploads',
+            filename: (req, file, cb) => {
+                const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('');
+                return cb(null, `${randomName}${extname(file.originalname)}`);
+            }
+        })
+    }))
+    update(@Param('id') id: string, @Body() updateReclamoDto: any, @UploadedFile() file?: any) {
+        if (file) {
+            updateReclamoDto.evidencia = file.path;
+        }
         return this.reclamoService.update(id, updateReclamoDto);
     }
 
