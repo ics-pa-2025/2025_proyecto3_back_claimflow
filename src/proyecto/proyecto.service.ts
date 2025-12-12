@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Proyecto, ProyectoDocument } from './schemas/proyecto.schema';
@@ -15,8 +15,15 @@ export class ProyectoService {
     ) { }
 
     async create(createProyectoDto: CreateProyectoDto): Promise<Proyecto> {
-        const createdProyecto = new this.proyectoModel(createProyectoDto);
-        return createdProyecto.save();
+        try {
+            const createdProyecto = new this.proyectoModel(createProyectoDto);
+            return await createdProyecto.save();
+        } catch (error) {
+            if (error.code === 11000) {
+                throw new ConflictException('Ya existe un proyecto con ese nombre');
+            }
+            throw error;
+        }
     }
 
     async findAll(): Promise<Proyecto[]> {
@@ -42,16 +49,23 @@ export class ProyectoService {
     }
 
     async update(id: string, updateProyectoDto: UpdateProyectoDto): Promise<Proyecto> {
-        const updatedProyecto = await this.proyectoModel
-            .findOneAndUpdate({ _id: id, deletedAt: null }, updateProyectoDto, { new: true })
-            .populate('tipo')
-            .populate('estado')
-            .populate('clienteId')
-            .exec();
-        if (!updatedProyecto) {
-            throw new NotFoundException(`Proyecto with ID ${id} not found`);
+        try {
+            const updatedProyecto = await this.proyectoModel
+                .findOneAndUpdate({ _id: id, deletedAt: null }, updateProyectoDto, { new: true })
+                .populate('tipo')
+                .populate('estado')
+                .populate('clienteId')
+                .exec();
+            if (!updatedProyecto) {
+                throw new NotFoundException(`Proyecto with ID ${id} not found`);
+            }
+            return updatedProyecto;
+        } catch (error) {
+            if (error.code === 11000) {
+                throw new ConflictException('Ya existe un proyecto con ese nombre');
+            }
+            throw error;
         }
-        return updatedProyecto;
     }
 
     async remove(id: string): Promise<Proyecto> {

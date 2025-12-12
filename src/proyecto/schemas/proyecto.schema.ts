@@ -8,25 +8,25 @@ export type ProyectoDocument = Proyecto & Document;
 
 @Schema({ timestamps: true })
 export class Proyecto {
-    @Prop({ required: true })
+    @Prop({ required: true, unique: true })
     nombre: string;
 
     @Prop({ required: true })
     descripcion: string;
 
-    @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'TipoProyecto', required: true })
+    @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'TipoProyecto', required: false })
     tipo: TipoProyecto;
 
-    @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Cliente', required: true })
+    @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Cliente', required: false })
     clienteId: Cliente;
 
-    @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'EstadoProyecto', required: true })
+    @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'EstadoProyecto', required: false })
     estado: EstadoProyecto;
 
-    @Prop({ required: true })
+    @Prop({ required: false })
     fechaInicio: Date;
 
-    @Prop({ required: true })
+    @Prop({ required: false })
     fechaFin: Date;
 
     @Prop({ default: null })

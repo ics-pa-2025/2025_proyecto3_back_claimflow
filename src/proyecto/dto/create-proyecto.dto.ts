@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsDateString, IsMongoId } from 'class-validator';
+import { IsString, IsNotEmpty, IsDateString, IsMongoId, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateProyectoDto {
@@ -12,28 +12,28 @@ export class CreateProyectoDto {
     @IsNotEmpty()
     descripcion: string;
 
-    @ApiProperty({ description: 'The ID of the project type' })
+    @ApiProperty({ description: 'The ID of the project type', required: false })
     @IsMongoId()
-    @IsNotEmpty()
-    tipo: string;
+    @IsOptional()
+    tipo?: string;
 
-    @ApiProperty({ description: 'The ID of the client' })
+    @ApiProperty({ description: 'The ID of the client', required: false })
     @IsMongoId()
-    @IsNotEmpty()
-    clienteId: string;
+    @IsOptional()
+    clienteId?: string;
 
-    @ApiProperty({ description: 'The ID of the project state' })
+    @ApiProperty({ description: 'The ID of the project state', required: false })
     @IsMongoId()
-    @IsNotEmpty()
-    estado: string;
+    @IsOptional()
+    estado?: string;
 
-    @ApiProperty({ description: 'The start date of the project' })
+    @ApiProperty({ description: 'The start date of the project', required: false })
     @IsDateString()
-    @IsNotEmpty()
-    fechaInicio: Date;
+    @IsOptional()
+    fechaInicio?: Date;
 
-    @ApiProperty({ description: 'The end date of the project' })
+    @ApiProperty({ description: 'The end date of the project', required: false })
     @IsDateString()
-    @IsNotEmpty()
-    fechaFin: Date;
+    @IsOptional()
+    fechaFin?: Date;
 }
