@@ -7,14 +7,14 @@ import { Proyecto, ProyectoSchema } from './schemas/proyecto.schema';
 import { Reclamo, ReclamoSchema } from '../reclamo/schemas/reclamo.schema';
 
 @Module({
-    imports: [
-        MongooseModule.forFeature([
-            { name: Proyecto.name, schema: ProyectoSchema },
-            { name: Reclamo.name, schema: ReclamoSchema },
-        ]),
-    ],
-    controllers: [ProyectoController],
-    providers: [ProyectoService],
-    exports: [ProyectoService],
+  imports: [
+    MongooseModule.forFeature([
+      { name: Proyecto.name, schema: ProyectoSchema },
+      { name: Reclamo.name, schema: ReclamoSchema },
+    ]),
+  ],
+  controllers: [ProyectoController],
+  providers: [ProyectoService],
+  exports: [ProyectoService],
 })
-export class ProyectoModule { }
+export class ProyectoModule {}

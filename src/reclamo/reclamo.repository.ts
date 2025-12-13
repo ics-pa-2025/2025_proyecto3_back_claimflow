@@ -6,42 +6,50 @@ import { CreateReclamoDto } from './dto/create-reclamo.dto';
 
 @Injectable()
 export class ReclamoRepository {
-    constructor(@InjectModel(Reclamo.name) private reclamoModel: Model<ReclamoDocument>) { }
+  constructor(
+    @InjectModel(Reclamo.name) private reclamoModel: Model<ReclamoDocument>,
+  ) {}
 
-    async create(createReclamoDto: CreateReclamoDto): Promise<Reclamo> {
-        // Ensure dto is treated as a plain object to avoid [Object: null prototype] issues with spread
-        const plainDto = JSON.parse(JSON.stringify(createReclamoDto));
+  async create(createReclamoDto: CreateReclamoDto): Promise<Reclamo> {
+    // Ensure dto is treated as a plain object to avoid [Object: null prototype] issues with spread
+    const plainDto = JSON.parse(JSON.stringify(createReclamoDto));
 
-        const createdReclamo = new this.reclamoModel({
-            ...plainDto,
-            historial: [{
-                fecha: new Date(),
-                accion: 'Reclamo creado',
-                responsable: 'Sistema',
-            }],
-        });
-        return createdReclamo.save();
-    }
+    const createdReclamo = new this.reclamoModel({
+      ...plainDto,
+      historial: [
+        {
+          fecha: new Date(),
+          accion: 'Reclamo creado',
+          responsable: 'Sistema',
+        },
+      ],
+    });
+    return createdReclamo.save();
+  }
 
-    async findAll(): Promise<Reclamo[]> {
-        return this.reclamoModel.find()
-            .populate('cliente')
-            .populate('proyecto')
-            .exec();
-    }
+  async findAll(): Promise<Reclamo[]> {
+    return this.reclamoModel
+      .find()
+      .populate('cliente')
+      .populate('proyecto')
+      .exec();
+  }
 
-    async findOne(id: string): Promise<Reclamo | null> {
-        return this.reclamoModel.findById(id)
-            .populate('cliente')
-            .populate('proyecto')
-            .exec();
-    }
+  async findOne(id: string): Promise<Reclamo | null> {
+    return this.reclamoModel
+      .findById(id)
+      .populate('cliente')
+      .populate('proyecto')
+      .exec();
+  }
 
-    async update(id: string, updateReclamoDto: any): Promise<Reclamo | null> {
-        return this.reclamoModel.findByIdAndUpdate(id, updateReclamoDto, { new: true }).exec();
-    }
+  async update(id: string, updateReclamoDto: any): Promise<Reclamo | null> {
+    return this.reclamoModel
+      .findByIdAndUpdate(id, updateReclamoDto, { new: true })
+      .exec();
+  }
 
-    async remove(id: string): Promise<Reclamo | null> {
-        return this.reclamoModel.findByIdAndDelete(id).exec();
-    }
+  async remove(id: string): Promise<Reclamo | null> {
+    return this.reclamoModel.findByIdAndDelete(id).exec();
+  }
 }

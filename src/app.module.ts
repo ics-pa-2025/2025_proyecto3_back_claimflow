@@ -32,4 +32,4 @@ import { SeedModule } from './database/seeders/seed.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

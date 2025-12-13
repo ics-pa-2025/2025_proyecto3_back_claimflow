@@ -8,29 +8,41 @@ export type ProyectoDocument = Proyecto & Document;
 
 @Schema({ timestamps: true })
 export class Proyecto {
-    @Prop({ required: true, unique: true })
-    nombre: string;
+  @Prop({ required: true, unique: true })
+  nombre: string;
 
-    @Prop({ required: true })
-    descripcion: string;
+  @Prop({ required: true })
+  descripcion: string;
 
-    @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'TipoProyecto', required: false })
-    tipo: TipoProyecto;
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'TipoProyecto',
+    required: false,
+  })
+  tipo: TipoProyecto;
 
-    @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Cliente', required: false })
-    clienteId: Cliente;
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'Cliente',
+    required: false,
+  })
+  clienteId: Cliente;
 
-    @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'EstadoProyecto', required: false })
-    estado: EstadoProyecto;
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'EstadoProyecto',
+    required: false,
+  })
+  estado: EstadoProyecto;
 
-    @Prop({ required: false })
-    fechaInicio: Date;
+  @Prop({ required: false })
+  fechaInicio: Date;
 
-    @Prop({ required: false })
-    fechaFin: Date;
+  @Prop({ required: false })
+  fechaFin: Date;
 
-    @Prop({ default: null })
-    deletedAt: Date;
+  @Prop({ default: null })
+  deletedAt: Date;
 }
 
 export const ProyectoSchema = SchemaFactory.createForClass(Proyecto);

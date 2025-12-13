@@ -7,12 +7,12 @@ import { ClienteRepository } from './cliente.repository';
 import { ProyectoModule } from '../proyecto/proyecto.module';
 
 @Module({
-    imports: [
-        MongooseModule.forFeature([{ name: Cliente.name, schema: ClienteSchema }]),
-        forwardRef(() => ProyectoModule)
-    ],
-    controllers: [ClienteController],
-    providers: [ClienteService, ClienteRepository],
-    exports: [ClienteService]
+  imports: [
+    MongooseModule.forFeature([{ name: Cliente.name, schema: ClienteSchema }]),
+    forwardRef(() => ProyectoModule),
+  ],
+  controllers: [ClienteController],
+  providers: [ClienteService, ClienteRepository],
+  exports: [ClienteService],
 })
-export class ClienteModule { }
+export class ClienteModule {}

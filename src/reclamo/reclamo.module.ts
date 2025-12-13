@@ -6,8 +6,10 @@ import { Reclamo, ReclamoSchema } from './schemas/reclamo.schema';
 import { ReclamoRepository } from './reclamo.repository';
 
 @Module({
-    imports: [MongooseModule.forFeature([{ name: Reclamo.name, schema: ReclamoSchema }])],
-    controllers: [ReclamoController],
-    providers: [ReclamoService, ReclamoRepository],
+  imports: [
+    MongooseModule.forFeature([{ name: Reclamo.name, schema: ReclamoSchema }]),
+  ],
+  controllers: [ReclamoController],
+  providers: [ReclamoService, ReclamoRepository],
 })
-export class ReclamoModule { }
+export class ReclamoModule {}
