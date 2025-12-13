@@ -82,9 +82,7 @@ describe('ClienteRepository - Tests Unitarios', () => {
         apellido: 'González',
         dni: '87654321',
         email: 'maria.gonzalez@example.com',
-        proyectos: [
-          { nombre: 'Proyecto A', tipo: 'Desarrollo' },
-        ],
+        proyectos: [{ nombre: 'Proyecto A', tipo: 'Desarrollo' }],
       };
 
       const result = await repository.create(createDto);

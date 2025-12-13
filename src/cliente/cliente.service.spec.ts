@@ -91,9 +91,7 @@ describe('ClienteService - Tests Unitarios', () => {
         apellido: 'González',
         dni: '87654321',
         email: 'maria.gonzalez@example.com',
-        proyectos: [
-          { nombre: 'Proyecto B', tipo: 'Marketing' },
-        ],
+        proyectos: [{ nombre: 'Proyecto B', tipo: 'Marketing' }],
       };
 
       const clienteConProyectos = {
@@ -123,7 +121,9 @@ describe('ClienteService - Tests Unitarios', () => {
 
       mockClienteRepository.create.mockRejectedValue(duplicateError);
 
-      await expect(service.create(createDto)).rejects.toThrow(ConflictException);
+      await expect(service.create(createDto)).rejects.toThrow(
+        ConflictException,
+      );
       await expect(service.create(createDto)).rejects.toThrow(
         'Ya existe un cliente con ese DNI',
       );
@@ -143,7 +143,9 @@ describe('ClienteService - Tests Unitarios', () => {
 
       mockClienteRepository.create.mockRejectedValue(duplicateError);
 
-      await expect(service.create(createDto)).rejects.toThrow(ConflictException);
+      await expect(service.create(createDto)).rejects.toThrow(
+        ConflictException,
+      );
       await expect(service.create(createDto)).rejects.toThrow(
         'Ya existe un cliente con ese Email',
       );

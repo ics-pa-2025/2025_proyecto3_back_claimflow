@@ -248,10 +248,7 @@ describe('ProyectoController - Tests de Integración', () => {
         .send({ estadoId })
         .expect(200);
 
-      expect(proyectoService.cambiarEstado).toHaveBeenCalledWith(
-        id,
-        estadoId,
-      );
+      expect(proyectoService.cambiarEstado).toHaveBeenCalledWith(id, estadoId);
     });
   });
 });

@@ -125,7 +125,10 @@ describe('ReclamoService - Tests Unitarios', () => {
 
   describe('findAll', () => {
     it('debe retornar todos los reclamos', async () => {
-      const reclamos = [mockReclamo, { ...mockReclamo, _id: '507f1f77bcf86cd799439014' }];
+      const reclamos = [
+        mockReclamo,
+        { ...mockReclamo, _id: '507f1f77bcf86cd799439014' },
+      ];
       mockReclamoRepository.findAll.mockResolvedValue(reclamos);
 
       const result = await service.findAll();
@@ -178,9 +181,7 @@ describe('ReclamoService - Tests Unitarios', () => {
 
     it('debe manejar IDs inválidos', async () => {
       const invalidId = 'invalid-id';
-      mockReclamoRepository.findOne.mockRejectedValue(
-        new Error('ID inválido'),
-      );
+      mockReclamoRepository.findOne.mockRejectedValue(new Error('ID inválido'));
 
       await expect(service.findOne(invalidId)).rejects.toThrow('ID inválido');
     });
@@ -208,7 +209,10 @@ describe('ReclamoService - Tests Unitarios', () => {
       const id = '507f1f77bcf86cd799439011';
       const updateDto = { descripcion: 'Descripción actualizada' };
 
-      const updatedReclamo = { ...mockReclamo, descripcion: updateDto.descripcion };
+      const updatedReclamo = {
+        ...mockReclamo,
+        descripcion: updateDto.descripcion,
+      };
       mockReclamoRepository.update.mockResolvedValue(updatedReclamo);
 
       const result = await service.update(id, updateDto);

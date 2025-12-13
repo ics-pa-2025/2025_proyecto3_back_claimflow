@@ -275,9 +275,9 @@ describe('ClienteController - Tests de Integración', () => {
         .get('/cliente')
         .expect(200);
 
-      expect(
-        response.body.every((c: any) => c.fechaEliminacion === null),
-      ).toBe(true);
+      expect(response.body.every((c: any) => c.fechaEliminacion === null)).toBe(
+        true,
+      );
     });
   });
 
@@ -483,7 +483,9 @@ describe('ClienteController - Tests de Integración', () => {
         .delete(`/cliente/${id}`)
         .expect(200);
 
-      expect(response.body.fechaEliminacion).toEqual(fechaEliminacion.toISOString());
+      expect(response.body.fechaEliminacion).toEqual(
+        fechaEliminacion.toISOString(),
+      );
     });
   });
 
