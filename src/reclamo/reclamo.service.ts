@@ -2,11 +2,22 @@ import { Injectable } from '@nestjs/common';
 import { ReclamoRepository } from './reclamo.repository';
 import { CreateReclamoDto } from './dto/create-reclamo.dto';
 
+import { EstadoReclamoService } from '../estado-reclamo/estado-reclamo.service';
+
 @Injectable()
 export class ReclamoService {
-    constructor(private readonly reclamoRepository: ReclamoRepository) { }
+    constructor(
+        private readonly reclamoRepository: ReclamoRepository,
+        private readonly estadoReclamoService: EstadoReclamoService,
+    ) { }
 
-    create(createReclamoDto: CreateReclamoDto) {
+    async create(createReclamoDto: CreateReclamoDto) {
+        if (!createReclamoDto.estado) {
+            const estado = await this.estadoReclamoService.findByNombre('Pendiente');
+            if (estado) {
+                createReclamoDto.estado = (estado as any)._id.toString();
+            }
+        }
         return this.reclamoRepository.create(createReclamoDto);
     }
 

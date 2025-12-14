@@ -8,6 +8,7 @@ import { ReclamoModule } from './reclamo/reclamo.module';
 import { TipoProyectoModule } from './tipo-proyecto/tipo-proyecto.module';
 import { EstadoProyectoModule } from './estado-proyecto/estado-proyecto.module';
 import { ProyectoModule } from './proyecto/proyecto.module';
+import { EstadoReclamoModule } from './estado-reclamo/estado-reclamo.module';
 import { SeedModule } from './database/seeders/seed.module';
 
 @Module({
@@ -27,6 +28,7 @@ import { SeedModule } from './database/seeders/seed.module';
     TipoProyectoModule,
     EstadoProyectoModule,
     ProyectoModule,
+    EstadoReclamoModule,
     SeedModule,
   ],
   controllers: [AppController],

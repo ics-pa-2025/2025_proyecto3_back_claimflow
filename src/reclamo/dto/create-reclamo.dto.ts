@@ -32,4 +32,8 @@ export class CreateReclamoDto {
     @IsString()
     @IsNotEmpty()
     proyecto: string;
+
+    @IsMongoId()
+    @IsOptional()
+    estado?: string;
 }

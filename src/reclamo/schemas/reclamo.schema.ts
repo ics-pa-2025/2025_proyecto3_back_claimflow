@@ -34,8 +34,8 @@ export class Reclamo {
     @Prop()
     evidencia: string; // URL or path to file
 
-    @Prop({ default: 'Pendiente' })
-    estado: string;
+    @Prop({ type: Types.ObjectId, ref: 'EstadoReclamo' })
+    estado: Types.ObjectId;
 
     @Prop({ required: true })
     area: string;
