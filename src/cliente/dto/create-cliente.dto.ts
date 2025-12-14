@@ -22,7 +22,13 @@ export class CreateClienteDto {
 
     @IsString()
     @IsNotEmpty()
+    @IsString()
+    @IsNotEmpty()
     dni: string;
+
+    @IsString()
+    @IsOptional()
+    usuarioId?: string;
 
     @IsEmail()
     email: string;

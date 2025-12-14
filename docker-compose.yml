@@ -28,6 +28,8 @@ services:
       - .:/app
       - /app/node_modules
     command: sh -c "npm install && npm run start:dev"
+    networks:
+      - microservices
 
   mongo-express:
     image: mongo-express:1.0.2
@@ -43,9 +45,16 @@ services:
 
     depends_on:
       - mongo
+    networks:
+      - microservices
 
     
 
 volumes:
   mongo_data:
   mongo_config:
+
+networks:
+  microservices:
+    name: shared-microservices
+    external: true

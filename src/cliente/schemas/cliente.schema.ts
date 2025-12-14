@@ -26,7 +26,11 @@ export class Cliente {
     email: string;
 
     @Prop({ required: true, unique: true })
+    @Prop({ required: true, unique: true })
     dni: string;
+
+    @Prop({ default: null })
+    usuarioId: string;
 
     @Prop()
     telefono: string;

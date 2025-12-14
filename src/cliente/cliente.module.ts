@@ -1,3 +1,4 @@
+import { HttpModule } from '@nestjs/axios';
 import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ClienteService } from './cliente.service';
@@ -9,7 +10,8 @@ import { ProyectoModule } from '../proyecto/proyecto.module';
 @Module({
     imports: [
         MongooseModule.forFeature([{ name: Cliente.name, schema: ClienteSchema }]),
-        forwardRef(() => ProyectoModule)
+        forwardRef(() => ProyectoModule),
+        HttpModule
     ],
     controllers: [ClienteController],
     providers: [ClienteService, ClienteRepository],

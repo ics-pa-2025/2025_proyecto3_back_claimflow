@@ -1,16 +1,22 @@
-import { Injectable, ConflictException, Inject, forwardRef } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { Injectable, ConflictException, Inject, forwardRef, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { ClienteRepository } from './cliente.repository';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { ProyectoService } from '../proyecto/proyecto.service';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class ClienteService {
     constructor(
         private readonly clienteRepository: ClienteRepository,
-        @Inject(forwardRef(() => ProyectoService)) private readonly proyectoService: ProyectoService
+        @Inject(forwardRef(() => ProyectoService)) private readonly proyectoService: ProyectoService,
+        private readonly httpService: HttpService
     ) { }
 
     async create(createClienteDto: CreateClienteDto) {
+        if (createClienteDto.usuarioId) {
+            await this.validateUserRole(createClienteDto.usuarioId);
+        }
         try {
             return await this.clienteRepository.create(createClienteDto);
         } catch (error) {
@@ -23,6 +29,29 @@ export class ClienteService {
                 }
             }
             throw error;
+        }
+    }
+
+    private async validateUserRole(usuarioId: string) {
+        try {
+            // "auth-service-claimflow" is the container name in shared-microservices network
+            const url = `http://auth-service-claimflow:3001/user/${usuarioId}/roles`;
+            const response = await lastValueFrom(this.httpService.get(url));
+            const userWithRoles = response.data;
+
+            // Should check for 'client' or 'cliente' depending on auth service seeder
+            // The seeder uses 'client', so we check for that.
+            const hasClientRole = userWithRoles.roles && userWithRoles.roles.some((r: any) => r.name === 'client');
+
+            if (!hasClientRole) {
+                throw new BadRequestException('El usuario indicado no tiene el rol de cliente.');
+            }
+        } catch (error: any) {
+            if (error instanceof BadRequestException) {
+                throw error;
+            }
+            console.error('Error validating user role:', error.message);
+            throw new BadRequestException('Error al validar el usuario: ' + (error.response?.data?.message || error.message));
         }
     }
 
