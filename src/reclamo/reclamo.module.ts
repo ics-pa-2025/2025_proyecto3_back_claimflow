@@ -5,11 +5,13 @@ import { ReclamoController } from './reclamo.controller';
 import { Reclamo, ReclamoSchema } from './schemas/reclamo.schema';
 import { ReclamoRepository } from './reclamo.repository';
 import { EstadoReclamoModule } from '../estado-reclamo/estado-reclamo.module';
+import { AreaModule } from '../area/area.module';
 
 @Module({
     imports: [
         MongooseModule.forFeature([{ name: Reclamo.name, schema: ReclamoSchema }]),
         EstadoReclamoModule,
+        AreaModule,
     ],
     controllers: [ReclamoController],
     providers: [ReclamoService, ReclamoRepository],

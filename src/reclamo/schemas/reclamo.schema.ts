@@ -37,8 +37,8 @@ export class Reclamo {
     @Prop({ type: Types.ObjectId, ref: 'EstadoReclamo' })
     estado: Types.ObjectId;
 
-    @Prop({ required: true })
-    area: string;
+    @Prop({ type: Types.ObjectId, ref: 'Area', required: true })
+    area: Types.ObjectId;
 
     @Prop({ type: [HistorialSchema], default: [] })
     historial: Historial[];

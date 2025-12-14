@@ -21,7 +21,7 @@ export class CreateReclamoDto {
     @IsOptional()
     evidencia?: string;
 
-    @IsString()
+    @IsMongoId()
     @IsNotEmpty()
     area: string;
 

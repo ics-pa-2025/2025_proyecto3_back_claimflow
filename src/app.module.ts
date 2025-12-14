@@ -9,6 +9,8 @@ import { TipoProyectoModule } from './tipo-proyecto/tipo-proyecto.module';
 import { EstadoProyectoModule } from './estado-proyecto/estado-proyecto.module';
 import { ProyectoModule } from './proyecto/proyecto.module';
 import { EstadoReclamoModule } from './estado-reclamo/estado-reclamo.module';
+import { AreaModule } from './area/area.module';
+
 import { SeedModule } from './database/seeders/seed.module';
 
 @Module({
@@ -29,6 +31,7 @@ import { SeedModule } from './database/seeders/seed.module';
     EstadoProyectoModule,
     ProyectoModule,
     EstadoReclamoModule,
+    AreaModule,
     SeedModule,
   ],
   controllers: [AppController],
