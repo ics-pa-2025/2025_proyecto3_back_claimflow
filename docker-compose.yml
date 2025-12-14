@@ -13,6 +13,8 @@ services:
     volumes:
       - mongo_data:/data/db
       - mongo_config:/data/configdb
+    networks:
+      - microservices
 
   backend:
     build: .

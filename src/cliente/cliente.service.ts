@@ -37,11 +37,11 @@ export class ClienteService {
             // "auth-service-claimflow" is the container name in shared-microservices network
             const url = `http://auth-service-claimflow:3001/user/${usuarioId}/roles`;
             const response = await lastValueFrom(this.httpService.get(url));
-            const userWithRoles = response.data;
+            const userWithRoles = response.data as { roles: { name: string }[] };
 
             // Should check for 'client' or 'cliente' depending on auth service seeder
             // The seeder uses 'client', so we check for that.
-            const hasClientRole = userWithRoles.roles && userWithRoles.roles.some((r: any) => r.name === 'client');
+            const hasClientRole = userWithRoles.roles && userWithRoles.roles.some((r) => r.name === 'client');
 
             if (!hasClientRole) {
                 throw new BadRequestException('El usuario indicado no tiene el rol de cliente.');
