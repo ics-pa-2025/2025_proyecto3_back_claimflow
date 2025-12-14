@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
 import { ReclamoService } from './reclamo.service';
 import { CreateReclamoDto } from './dto/create-reclamo.dto';
+import { UpdateReclamoDto } from './dto/update-reclamo.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -46,7 +47,7 @@ export class ReclamoController {
             }
         })
     }))
-    update(@Param('id') id: string, @Body() updateReclamoDto: any, @UploadedFile() file?: any) {
+    update(@Param('id') id: string, @Body() updateReclamoDto: UpdateReclamoDto, @UploadedFile() file?: any) {
         if (file) {
             updateReclamoDto.evidencia = file.path;
         }
