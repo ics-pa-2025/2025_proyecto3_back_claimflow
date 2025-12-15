@@ -12,6 +12,7 @@ import { AreaModule } from './area/area.module';
 
 import { SeedModule } from './database/seeders/seed.module';
 import { ConnectionModule } from './database/connection/connection.module';
+import { SolicitudReclamoModule } from './solicitud-reclamo/solicitud-reclamo.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ConnectionModule } from './database/connection/connection.module';
     AreaModule,
     SeedModule,
     ConnectionModule,
+    SolicitudReclamoModule,
   ],
   controllers: [AppController],
   providers: [AppService],
