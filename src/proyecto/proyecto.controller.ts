@@ -1,3 +1,4 @@
+
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ProyectoService } from './proyecto.service';
@@ -61,5 +62,11 @@ export class ProyectoController {
     @ApiResponse({ status: 404, description: 'Proyecto not found.' })
     cambiarEstado(@Param('id') id: string, @Body('estadoId') estadoId: string) {
         return this.proyectoService.cambiarEstado(id, estadoId);
+    }
+    @Get('cliente/:clienteId')
+    @ApiOperation({ summary: 'Get all Proyectos for a Cliente' })
+    @ApiResponse({ status: 200, description: 'Return all Proyectos for the Cliente.' })
+    findByCliente(@Param('clienteId') clienteId: string) {
+        return this.proyectoService.findByCliente(clienteId);
     }
 }

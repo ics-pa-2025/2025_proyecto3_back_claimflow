@@ -1,4 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 import { SolicitudReclamoService } from './solicitud-reclamo.service';
 import { CreateSolicitudReclamoDto } from './dto/create-solicitud-reclamo.dto';
 import { UpdateSolicitudReclamoDto } from './dto/update-solicitud-reclamo.dto';
@@ -7,8 +10,26 @@ import { UpdateSolicitudReclamoDto } from './dto/update-solicitud-reclamo.dto';
 export class SolicitudReclamoController {
   constructor(private readonly solicitudReclamoService: SolicitudReclamoService) {}
 
+
   @Post()
-  create(@Body() createSolicitudReclamoDto: CreateSolicitudReclamoDto) {
+  @UseInterceptors(AnyFilesInterceptor({
+    storage: diskStorage({
+      destination: './public',
+      filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        cb(null, uniqueSuffix + extname(file.originalname));
+      },
+    }),
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB por archivo
+  }))
+  async create(
+    @Body() createSolicitudReclamoDto: CreateSolicitudReclamoDto,
+    @UploadedFiles() files: Array<Express.Multer.File>
+  ) {
+    // Guardar paths de archivos en evidencia
+    if (files && files.length > 0) {
+      createSolicitudReclamoDto.evidencia = files.map(f => f.filename);
+    }
     return this.solicitudReclamoService.create(createSolicitudReclamoDto);
   }
 

@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, ConflictException, Inject, forwardRef, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, ConflictException, Inject, forwardRef, BadRequestException,  } from '@nestjs/common';
 import { ClienteRepository } from './cliente.repository';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { ProyectoService } from '../proyecto/proyecto.service';
@@ -34,7 +34,6 @@ export class ClienteService {
 
     private async validateUserRole(usuarioId: string) {
         try {
-            // "auth-service-claimflow" is the container name in shared-microservices network
             const url = `http://auth-service-claimflow:3001/user/${usuarioId}/roles`;
             const response = await lastValueFrom(this.httpService.get(url));
             const userWithRoles = response.data as { roles: { name: string }[] };
