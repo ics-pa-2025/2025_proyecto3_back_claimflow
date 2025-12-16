@@ -1,0 +1,35 @@
+services:
+  mongo:
+    image: mongo:6.0
+    container_name: claimflow_db
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    volumes:
+      - claimflow_mongo_data:/data/db
+      - claimflow_mongo_config:/data/configdb
+    networks:
+      - microservices
+
+  claimflow-backend:
+    image: ghcr.io/ics-pa-2025/2025_proyecto3_back_claimflow:latest
+    container_name: claimflow_backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    networks:
+      - microservices
+
+volumes:
+  claimflow_mongo_data:
+  claimflow_mongo_config:
+
+networks:
+  microservices:
+    name: claimflow-microservices
+    external: true
