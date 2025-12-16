@@ -3,12 +3,14 @@ import { ReclamoRepository } from './reclamo.repository';
 import { CreateReclamoDto } from './dto/create-reclamo.dto';
 
 import { EstadoReclamoService } from '../estado-reclamo/estado-reclamo.service';
+import { ClienteService } from '../cliente/cliente.service';
 
 @Injectable()
 export class ReclamoService {
     constructor(
         private readonly reclamoRepository: ReclamoRepository,
         private readonly estadoReclamoService: EstadoReclamoService,
+        private readonly clienteService: ClienteService,
     ) { }
 
     async create(createReclamoDto: CreateReclamoDto) {
@@ -21,7 +23,16 @@ export class ReclamoService {
         return this.reclamoRepository.create(createReclamoDto);
     }
 
-    findAll() {
+    async findAll(userId?: string, userRole?: string) {
+        // If user is a client, filter by their cliente ID
+        if (userRole === 'client' && userId) {
+            const cliente = await this.clienteService.findByUsuarioId(userId);
+            if (cliente) {
+                return this.reclamoRepository.findAll((cliente as any)._id.toString());
+            }
+            return []; // No cliente found for this user
+        }
+        // For other roles, return all
         return this.reclamoRepository.findAll();
     }
 
