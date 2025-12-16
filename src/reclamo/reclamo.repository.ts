@@ -68,13 +68,13 @@ export class ReclamoRepository {
         return this.reclamoModel.findByIdAndDelete(id).exec();
     }
 
-    async getStats(clienteId?: string): Promise<{ total: number; thisMonth: number; lastMonth: number }> {
+    async getStats(clienteId?: string, cerradoId?: string): Promise<{ total: number; thisMonth: number; lastMonth: number; closed: number; inProcess: number }> {
         const now = new Date();
         const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
         const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
         const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
 
-        const baseFilter = clienteId ? { cliente: clienteId } : {};
+        const baseFilter: any = clienteId ? { cliente: clienteId } : {};
 
         const total = await this.reclamoModel.countDocuments(baseFilter).exec();
 
@@ -88,7 +88,27 @@ export class ReclamoRepository {
             createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth },
         }).exec();
 
-        return { total, thisMonth, lastMonth };
+        let closed = 0;
+        let inProcess = 0;
+
+        if (cerradoId) {
+            const cerradoObjId = new Types.ObjectId(cerradoId);
+            closed = await this.reclamoModel.countDocuments({
+                ...baseFilter,
+                estado: cerradoObjId
+            }).exec();
+
+            inProcess = await this.reclamoModel.countDocuments({
+                ...baseFilter,
+                estado: { $ne: cerradoObjId }
+            }).exec();
+        } else {
+            // Fallback if cerradoId is not provided, though it should be. 
+            // Without status ID we cannot distinguish.
+            inProcess = total;
+        }
+
+        return { total, thisMonth, lastMonth, closed, inProcess };
     }
 
     async getReclamosPorDia(clienteId?: string): Promise<{ dayOfWeek: number; count: number }[]> {

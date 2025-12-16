@@ -78,13 +78,16 @@ export class ReclamoService {
             }
         }
 
-        const stats = await this.reclamoRepository.getStats(clienteId);
+        const estadoCerrado = await this.estadoReclamoService.findByNombre('Cerrado');
+        const cerradoId = estadoCerrado ? (estadoCerrado as any)._id.toString() : undefined;
+
+        const stats = await this.reclamoRepository.getStats(clienteId, cerradoId);
 
         let growthPercentage = 0;
         if (stats.lastMonth > 0) {
             growthPercentage = ((stats.thisMonth - stats.lastMonth) / stats.lastMonth) * 100;
         } else if (stats.thisMonth > 0) {
-            growthPercentage = 100; // 100% growth if prev month was 0 and this month > 0
+            growthPercentage = 100;
         }
 
         const formattedPercentage = growthPercentage.toFixed(1);
@@ -94,6 +97,8 @@ export class ReclamoService {
             totalReclamos: stats.total,
             porcentajeCrecimiento: `${sign}${formattedPercentage}%`,
             diferenciaMesAnterior: `${sign}${formattedPercentage}% mes anterior`,
+            reclamosEnProceso: stats.inProcess,
+            reclamosFinalizados: stats.closed,
         };
     }
 
