@@ -60,6 +60,32 @@ export class ReclamoController {
         return this.reclamoService.getDashboardStats(userId, userRole);
     }
 
+    @Get('dashboard/chart-days')
+    async getChartDays(@Req() request: Request) {
+        const authHeader = request.headers.authorization;
+        let userId: string | undefined;
+        let userRole: string | undefined;
+
+        if (authHeader) {
+            try {
+                const token = authHeader.replace('Bearer ', '');
+                const url = `http://auth-service-claimflow:3001/user/me`;
+                const response = await lastValueFrom(
+                    this.httpService.get(url, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    })
+                );
+                const user = response.data;
+                userId = user.id;
+                userRole = user.roles && user.roles.length > 0 ? user.roles[0].name : null;
+            } catch (error) {
+                console.error('Error fetching user info for chart:', error.message);
+            }
+        }
+
+        return this.reclamoService.getReclamosPorDia(userId, userRole);
+    }
+
     @Get()
     async findAll(@Req() request: Request) {
         const authHeader = request.headers.authorization;

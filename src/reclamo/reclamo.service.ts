@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ReclamoRepository } from './reclamo.repository';
 import { CreateReclamoDto } from './dto/create-reclamo.dto';
 import { ReclamoStatsDto } from './dto/reclamo-stats.dto';
+import { ReclamoChartDto } from './dto/reclamo-chart.dto';
 
 import { EstadoReclamoService } from '../estado-reclamo/estado-reclamo.service';
 import { ClienteService } from '../cliente/cliente.service';
@@ -93,5 +94,47 @@ export class ReclamoService {
             porcentajeCrecimiento: `${sign}${formattedPercentage}%`,
             diferenciaMesAnterior: `${sign}${formattedPercentage}% mes anterior`,
         };
+    }
+
+    async getReclamosPorDia(userId?: string, userRole?: string): Promise<ReclamoChartDto> {
+        let clienteId: string | undefined;
+
+        if (userRole === 'client' && userId) {
+            const cliente = await this.clienteService.findByUsuarioId(userId);
+            if (cliente) {
+                clienteId = (cliente as any)._id.toString();
+            }
+        }
+
+        const rawData = await this.reclamoRepository.getReclamosPorDia(clienteId);
+
+        // Mongo $dayOfWeek: 1 (Sun) to 7 (Sat)
+        // Wanted: Lun, Mar, Mie, Jue, Vie, Sab, Dom
+        // Mapping: 2->Lun, 3->Mar, 4->Mie, 5->Jue, 6->Vie, 7->Sab, 1->Dom
+        const dayMapping: Record<number, string> = {
+            2: 'Lun', 3: 'Mar', 4: 'Mie', 5: 'Jue', 6: 'Vie', 7: 'Sab', 1: 'Dom'
+        };
+
+        const result = [
+            { name: 'Lun', reclamos: 0 },
+            { name: 'Mar', reclamos: 0 },
+            { name: 'Mie', reclamos: 0 },
+            { name: 'Jue', reclamos: 0 },
+            { name: 'Vie', reclamos: 0 },
+            { name: 'Sab', reclamos: 0 },
+            { name: 'Dom', reclamos: 0 },
+        ];
+
+        rawData.forEach(item => {
+            const dayName = dayMapping[item.dayOfWeek];
+            if (dayName) {
+                const index = result.findIndex(r => r.name === dayName);
+                if (index !== -1) {
+                    result[index].reclamos = item.count;
+                }
+            }
+        });
+
+        return result;
     }
 }

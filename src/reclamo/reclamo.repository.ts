@@ -90,4 +90,36 @@ export class ReclamoRepository {
 
         return { total, thisMonth, lastMonth };
     }
+
+    async getReclamosPorDia(clienteId?: string): Promise<{ dayOfWeek: number; count: number }[]> {
+        const now = new Date();
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - 6); // Last 7 days including today
+        startOfWeek.setHours(0, 0, 0, 0);
+
+        const matchStage: any = {
+            createdAt: { $gte: startOfWeek },
+        };
+
+        if (clienteId) {
+            matchStage.cliente = clienteId; // Will be cast to ObjectId by Mongoose if defined in schema as ObjectId
+        }
+
+        return this.reclamoModel.aggregate([
+            { $match: matchStage },
+            {
+                $group: {
+                    _id: { $dayOfWeek: '$createdAt' },
+                    count: { $sum: 1 },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    dayOfWeek: '$_id',
+                    count: 1,
+                },
+            },
+        ]).exec();
+    }
 }
