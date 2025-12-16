@@ -27,9 +27,14 @@ export class ReclamoService {
         // If user is a client, filter by their cliente ID
         if (userRole === 'client' && userId) {
             const cliente = await this.clienteService.findByUsuarioId(userId);
+            console.log(`[ReclamoService] Finding claims for client. UserID: ${userId}, ClientFound: ${!!cliente}`);
+
             if (cliente) {
-                return this.reclamoRepository.findAll((cliente as any)._id.toString());
+                const results = await this.reclamoRepository.findAll((cliente as any)._id.toString());
+                console.log(`[ReclamoService] Client ID: ${(cliente as any)._id}, Claims found: ${results.length}`);
+                return results;
             }
+            console.warn(`[ReclamoService] User has 'client' role but no Client record found.`);
             return []; // No cliente found for this user
         }
         // For other roles, return all

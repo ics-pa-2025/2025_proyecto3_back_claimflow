@@ -50,13 +50,19 @@ export class ReclamoController {
                 })
             );
 
+
             const user = response.data;
             const userRole = user.roles && user.roles.length > 0 ? user.roles[0].name : null;
 
+            console.log('User ID:', user.id);
+            console.log('User Role:', userRole);
+
             return this.reclamoService.findAll(user.id, userRole);
         } catch (error) {
-            // If auth fails, return all (or handle error differently)
-            return this.reclamoService.findAll();
+            console.error('Error fetching user info:', error.message);
+            // FAIL CLOSE: If auth fails, DO NOT return all claims
+            // Throw error or return empty
+            throw new BadRequestException('Could not validate user identity');
         }
     }
 
