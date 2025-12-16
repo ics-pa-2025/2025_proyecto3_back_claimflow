@@ -19,8 +19,8 @@ const HistorialSchema = SchemaFactory.createForClass(Historial);
 
 @Schema({ timestamps: true })
 export class Reclamo {
-    @Prop({ required: true })
-    tipo: string;
+    @Prop({ type: Types.ObjectId, ref: 'TipoReclamo', required: true })
+    tipo: Types.ObjectId;
 
     @Prop({ required: false, default: 'Normal' })
     prioridad: string;
