@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { TipoProyecto, TipoProyectoDocument } from '../../tipo-proyecto/schemas/tipo-proyecto.schema';
 import { EstadoProyecto, EstadoProyectoDocument } from '../../estado-proyecto/schemas/estado-proyecto.schema';
 import { EstadoReclamo, EstadoReclamoDocument } from '../../estado-reclamo/schemas/estado-reclamo.schema';
+import { Area, AreaDocument } from '../../area/schemas/area.schema';
 
 @Injectable()
 export class SeedService implements OnModuleInit {
@@ -13,6 +14,7 @@ export class SeedService implements OnModuleInit {
         @InjectModel(TipoProyecto.name) private tipoProyectoModel: Model<TipoProyectoDocument>,
         @InjectModel(EstadoProyecto.name) private estadoProyectoModel: Model<EstadoProyectoDocument>,
         @InjectModel(EstadoReclamo.name) private estadoReclamoModel: Model<EstadoReclamoDocument>,
+        @InjectModel(Area.name) private areaModel: Model<AreaDocument>,
     ) { }
 
     async onModuleInit() {
@@ -23,6 +25,7 @@ export class SeedService implements OnModuleInit {
         await this.seedTipoProyecto();
         await this.seedEstadoProyecto();
         await this.seedEstadoReclamo();
+        await this.seedArea();
         this.logger.log('Seeding completed');
     }
 
@@ -69,6 +72,20 @@ export class SeedService implements OnModuleInit {
             ];
             await this.estadoReclamoModel.insertMany(estados);
             this.logger.log('EstadoReclamo seeded');
+        }
+    }
+
+    private async seedArea() {
+        const count = await this.areaModel.countDocuments().exec();
+        if (count === 0) {
+            const areas = [
+                { nombre: 'Soporte Técnico', descripcion: 'Encargada de recibir y gestionar los reclamos técnicos.' },
+                { nombre: 'Ventas', descripcion: 'Encargada de reclamos relacionados con facturación o ventas.' },
+                { nombre: 'Administración', descripcion: 'Gestión administrativa general.' },
+                { nombre: 'Operaciones', descripcion: 'Gestión operativa y logística.' },
+            ];
+            await this.areaModel.insertMany(areas);
+            this.logger.log('Area seeded');
         }
     }
 }

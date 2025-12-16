@@ -4,6 +4,7 @@ import { SeedService } from './seed.service';
 import { TipoProyecto, TipoProyectoSchema } from '../../tipo-proyecto/schemas/tipo-proyecto.schema';
 import { EstadoProyecto, EstadoProyectoSchema } from '../../estado-proyecto/schemas/estado-proyecto.schema';
 import { EstadoReclamo, EstadoReclamoSchema } from '../../estado-reclamo/schemas/estado-reclamo.schema';
+import { Area, AreaSchema } from '../../area/schemas/area.schema';
 
 @Module({
     imports: [
@@ -11,6 +12,7 @@ import { EstadoReclamo, EstadoReclamoSchema } from '../../estado-reclamo/schemas
             { name: TipoProyecto.name, schema: TipoProyectoSchema },
             { name: EstadoProyecto.name, schema: EstadoProyectoSchema },
             { name: EstadoReclamo.name, schema: EstadoReclamoSchema },
+            { name: Area.name, schema: AreaSchema },
         ]),
     ],
     providers: [SeedService],
