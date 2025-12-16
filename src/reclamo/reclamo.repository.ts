@@ -74,41 +74,56 @@ export class ReclamoRepository {
         const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
         const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
 
-        const baseFilter: any = clienteId ? { cliente: clienteId } : {};
+        const pipeline: any[] = [
+            {
+                $addFields: {
+                    clienteObjId: { $toObjectId: '$cliente' },
+                    estadoObjId: { $toObjectId: '$estado' }
+                }
+            }
+        ];
 
-        const total = await this.reclamoModel.countDocuments(baseFilter).exec();
-
-        const thisMonth = await this.reclamoModel.countDocuments({
-            ...baseFilter,
-            createdAt: { $gte: startOfThisMonth },
-        }).exec();
-
-        const lastMonth = await this.reclamoModel.countDocuments({
-            ...baseFilter,
-            createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth },
-        }).exec();
-
-        let closed = 0;
-        let inProcess = 0;
-
-        if (cerradoId) {
-            const cerradoObjId = new Types.ObjectId(cerradoId);
-            closed = await this.reclamoModel.countDocuments({
-                ...baseFilter,
-                estado: cerradoObjId
-            }).exec();
-
-            inProcess = await this.reclamoModel.countDocuments({
-                ...baseFilter,
-                estado: { $ne: cerradoObjId }
-            }).exec();
-        } else {
-            // Fallback if cerradoId is not provided, though it should be. 
-            // Without status ID we cannot distinguish.
-            inProcess = total;
+        if (clienteId) {
+            pipeline.push({
+                $match: { clienteObjId: new Types.ObjectId(clienteId) }
+            });
         }
 
-        return { total, thisMonth, lastMonth, closed, inProcess };
+        const statsPipeline = [
+            ...pipeline,
+            {
+                $facet: {
+                    total: [{ $count: 'count' }],
+                    thisMonth: [
+                        { $match: { createdAt: { $gte: startOfThisMonth } } },
+                        { $count: 'count' }
+                    ],
+                    lastMonth: [
+                        { $match: { createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth } } },
+                        { $count: 'count' }
+                    ],
+                    closed: [
+                        { $match: cerradoId ? { estadoObjId: new Types.ObjectId(cerradoId) } : {} },
+                        { $count: 'count' }
+                    ],
+                    inProcess: [
+                        { $match: cerradoId ? { estadoObjId: { $ne: new Types.ObjectId(cerradoId) } } : {} },
+                        { $count: 'count' }
+                    ]
+                }
+            }
+        ];
+
+        const results = await this.reclamoModel.aggregate(statsPipeline).exec();
+        const stats = results[0];
+
+        return {
+            total: stats.total[0]?.count || 0,
+            thisMonth: stats.thisMonth[0]?.count || 0,
+            lastMonth: stats.lastMonth[0]?.count || 0,
+            closed: stats.closed[0]?.count || 0,
+            inProcess: stats.inProcess[0]?.count || 0
+        };
     }
 
     async getReclamosPorDia(clienteId?: string): Promise<{ dayOfWeek: number; count: number }[]> {

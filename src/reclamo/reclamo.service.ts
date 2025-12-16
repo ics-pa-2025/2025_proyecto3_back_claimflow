@@ -4,6 +4,7 @@ import { CreateReclamoDto } from './dto/create-reclamo.dto';
 import { ReclamoStatsDto } from './dto/reclamo-stats.dto';
 import { ReclamoChartDto } from './dto/reclamo-chart.dto';
 import { ReclamoPieChartDto } from './dto/reclamo-pie-chart.dto';
+import { EstadoReclamoEnum } from '../common/enums/estado-reclamo.enum';
 
 import { EstadoReclamoService } from '../estado-reclamo/estado-reclamo.service';
 import { ClienteService } from '../cliente/cliente.service';
@@ -78,7 +79,7 @@ export class ReclamoService {
             }
         }
 
-        const estadoCerrado = await this.estadoReclamoService.findByNombre('Cerrado');
+        const estadoCerrado = await this.estadoReclamoService.findByNombre(EstadoReclamoEnum.CERRADO);
         const cerradoId = estadoCerrado ? (estadoCerrado as any)._id.toString() : undefined;
 
         const stats = await this.reclamoRepository.getStats(clienteId, cerradoId);
