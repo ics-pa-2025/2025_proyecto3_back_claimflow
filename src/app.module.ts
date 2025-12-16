@@ -14,6 +14,7 @@ import { SeedModule } from './database/seeders/seed.module';
 import { ConnectionModule } from './database/connection/connection.module';
 import { SolicitudReclamoModule } from './solicitud-reclamo/solicitud-reclamo.module';
 import { MensajeModule } from './mensaje/mensaje.module';
+import { TipoReclamoModule } from './tipo-reclamo/tipo-reclamo.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { MensajeModule } from './mensaje/mensaje.module';
     ProyectoModule,
     EstadoReclamoModule,
     AreaModule,
+    TipoReclamoModule,
     SeedModule,
     ConnectionModule,
     SolicitudReclamoModule,

@@ -28,6 +28,7 @@ export class ReclamoRepository {
         return this.reclamoModel.find(filter)
             .populate('cliente')
             .populate('proyecto')
+            .populate({ path: 'tipo', select: 'nombre descripcion' })
             .populate({ path: 'estado', select: 'nombre descripcion color' })
             .populate({ path: 'area', select: 'nombre descripcion' })
             .exec();
@@ -37,6 +38,7 @@ export class ReclamoRepository {
         return this.reclamoModel.findById(id)
             .populate('cliente')
             .populate('proyecto')
+            .populate({ path: 'tipo', select: 'nombre descripcion' })
             .populate({ path: 'estado', select: 'nombre descripcion color' })
             .populate({ path: 'area', select: 'nombre descripcion' })
             .exec();
@@ -59,6 +61,7 @@ export class ReclamoRepository {
         return this.reclamoModel.findByIdAndUpdate(id, updateOperation, { new: true })
             .populate('cliente')
             .populate('proyecto')
+            .populate({ path: 'tipo', select: 'nombre descripcion' })
             .populate({ path: 'estado', select: 'nombre descripcion color' })
             .populate({ path: 'area', select: 'nombre descripcion' })
             .exec();

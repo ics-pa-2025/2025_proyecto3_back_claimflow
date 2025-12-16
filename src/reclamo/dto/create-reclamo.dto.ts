@@ -1,7 +1,7 @@
 import { IsString, IsNotEmpty, IsOptional, IsMongoId } from 'class-validator';
 
 export class CreateReclamoDto {
-    @IsString()
+    @IsMongoId()
     @IsNotEmpty()
     tipo: string;
 

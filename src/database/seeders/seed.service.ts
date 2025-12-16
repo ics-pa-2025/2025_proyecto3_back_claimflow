@@ -5,6 +5,8 @@ import { TipoProyecto, TipoProyectoDocument } from '../../tipo-proyecto/schemas/
 import { EstadoProyecto, EstadoProyectoDocument } from '../../estado-proyecto/schemas/estado-proyecto.schema';
 import { EstadoReclamo, EstadoReclamoDocument } from '../../estado-reclamo/schemas/estado-reclamo.schema';
 import { Area, AreaDocument } from '../../area/schemas/area.schema';
+import { TipoReclamoSeederService } from './tipo-reclamo-seeder.service';
+import { TipoReclamo, TipoReclamoDocument } from '../../tipo-reclamo/schemas/tipo-reclamo.schema'; // Added import for TipoReclamo
 
 @Injectable()
 export class SeedService implements OnModuleInit {
@@ -15,6 +17,7 @@ export class SeedService implements OnModuleInit {
         @InjectModel(EstadoProyecto.name) private estadoProyectoModel: Model<EstadoProyectoDocument>,
         @InjectModel(EstadoReclamo.name) private estadoReclamoModel: Model<EstadoReclamoDocument>,
         @InjectModel(Area.name) private areaModel: Model<AreaDocument>,
+        private readonly tipoReclamoSeederService: TipoReclamoSeederService,
     ) { }
 
     async onModuleInit() {
@@ -26,6 +29,7 @@ export class SeedService implements OnModuleInit {
         await this.seedEstadoProyecto();
         await this.seedEstadoReclamo();
         await this.seedArea();
+        await this.tipoReclamoSeederService.seed();
         this.logger.log('Seeding completed');
     }
 
