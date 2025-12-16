@@ -27,7 +27,8 @@ export class MensajeController {
 
         try {
             const token = authHeader.replace('Bearer ', '');
-            const url = `http://auth-service-claimflow:3001/user/me`;
+            const authUrl = process.env.AUTH_SERVICE_URL || 'http://localhost:3001';
+            const url = `${authUrl}/user/me`;
             const response = await lastValueFrom(
                 this.httpService.get(url, {
                     headers: { Authorization: `Bearer ${token}` }

@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { TipoProyecto, TipoProyectoDocument } from '../../tipo-proyecto/schemas/tipo-proyecto.schema';
 import { EstadoProyecto, EstadoProyectoDocument } from '../../estado-proyecto/schemas/estado-proyecto.schema';
+import { EstadoReclamo, EstadoReclamoDocument } from '../../estado-reclamo/schemas/estado-reclamo.schema';
 
 @Injectable()
 export class SeedService implements OnModuleInit {
@@ -11,6 +12,7 @@ export class SeedService implements OnModuleInit {
     constructor(
         @InjectModel(TipoProyecto.name) private tipoProyectoModel: Model<TipoProyectoDocument>,
         @InjectModel(EstadoProyecto.name) private estadoProyectoModel: Model<EstadoProyectoDocument>,
+        @InjectModel(EstadoReclamo.name) private estadoReclamoModel: Model<EstadoReclamoDocument>,
     ) { }
 
     async onModuleInit() {
@@ -20,6 +22,7 @@ export class SeedService implements OnModuleInit {
     async seed() {
         await this.seedTipoProyecto();
         await this.seedEstadoProyecto();
+        await this.seedEstadoReclamo();
         this.logger.log('Seeding completed');
     }
 
@@ -48,6 +51,20 @@ export class SeedService implements OnModuleInit {
             ];
             await this.estadoProyectoModel.insertMany(estados);
             this.logger.log('EstadoProyecto seeded');
+        }
+    }
+
+    private async seedEstadoReclamo() {
+        const count = await this.estadoReclamoModel.countDocuments().exec();
+        if (count === 0) {
+            const estados = [
+                { nombre: 'Pendiente', descripcion: 'Reclamo recibido y pendiente de asignación', color: '#FFA500' },
+                { nombre: 'En Proceso', descripcion: 'Reclamo en proceso de resolución', color: '#007BFF' },
+                { nombre: 'Resuelto', descripcion: 'Reclamo resuelto', color: '#28A745' },
+                { nombre: 'Cerrado', descripcion: 'Reclamo cerrado', color: '#6C757D' },
+            ];
+            await this.estadoReclamoModel.insertMany(estados);
+            this.logger.log('EstadoReclamo seeded');
         }
     }
 }

@@ -22,8 +22,8 @@ export class Reclamo {
     @Prop({ required: true })
     tipo: string;
 
-    @Prop({ required: true })
-    prioridad: string;
+    @Prop()
+    prioridad?: string;
 
     @Prop({ required: true })
     criticidad: string;
@@ -48,6 +48,9 @@ export class Reclamo {
 
     @Prop({ type: Types.ObjectId, ref: 'Proyecto', required: true })
     proyecto: Types.ObjectId;
+
+    @Prop({ type: Types.ObjectId, ref: 'SolicitudReclamo', required: false })
+    solicitud?: Types.ObjectId;
 }
 
 export const ReclamoSchema = SchemaFactory.createForClass(Reclamo);

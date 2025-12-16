@@ -34,7 +34,8 @@ export class ClienteService {
 
     private async validateUserRole(usuarioId: string) {
         try {
-            const url = `http://auth-service-claimflow:3001/user/${usuarioId}/roles`;
+            const authUrl = process.env.AUTH_SERVICE_URL || 'http://localhost:3001';
+            const url = `${authUrl}/user/${usuarioId}/roles`;
             const response = await lastValueFrom(this.httpService.get(url));
             const userWithRoles = response.data as { roles: { name: string }[] };
 

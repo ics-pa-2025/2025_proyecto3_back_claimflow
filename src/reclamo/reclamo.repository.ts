@@ -30,6 +30,7 @@ export class ReclamoRepository {
             .populate('proyecto')
             .populate({ path: 'estado', select: 'nombre descripcion color' })
             .populate({ path: 'area', select: 'nombre descripcion' })
+            .populate({ path: 'solicitud', select: 'tipo descripcion cliente proyecto' })
             .exec();
     }
 
@@ -39,6 +40,7 @@ export class ReclamoRepository {
             .populate('proyecto')
             .populate({ path: 'estado', select: 'nombre descripcion color' })
             .populate({ path: 'area', select: 'nombre descripcion' })
+            .populate({ path: 'solicitud', select: 'tipo descripcion cliente proyecto' })
             .exec();
     }
 

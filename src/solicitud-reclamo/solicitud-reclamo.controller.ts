@@ -30,6 +30,7 @@ export class SolicitudReclamoController {
     if (files && files.length > 0) {
       createSolicitudReclamoDto.evidencia = files.map(f => f.filename);
     }
+    // The service now returns { solicitud, reclamo }
     return this.solicitudReclamoService.create(createSolicitudReclamoDto);
   }
 
