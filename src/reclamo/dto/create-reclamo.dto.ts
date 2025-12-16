@@ -6,12 +6,12 @@ export class CreateReclamoDto {
     tipo: string;
 
     @IsString()
-    @IsNotEmpty()
-    prioridad: string;
+    @IsOptional()
+    prioridad?: string;
 
     @IsString()
-    @IsNotEmpty()
-    criticidad: string;
+    @IsOptional()
+    criticidad?: string;
 
     @IsString()
     @IsNotEmpty()
@@ -22,8 +22,8 @@ export class CreateReclamoDto {
     evidencia?: string;
 
     @IsMongoId()
-    @IsNotEmpty()
-    area: string;
+    @IsOptional()
+    area?: string;
 
     @IsMongoId()
     @IsNotEmpty()

@@ -13,6 +13,13 @@ export class SolicitudReclamoRepository {
 
   async create(createDto: CreateSolicitudReclamoDto): Promise<SolicitudReclamo> {
     const plainDto = JSON.parse(JSON.stringify(createDto));
+    // Eliminar campos que no deben ser establecidos por el solicitante
+    const forbiddenFields = ['area', 'prioridad', 'estado', 'caracteristicas', 'asignado', 'assignedTo'];
+    for (const f of forbiddenFields) {
+      if (Object.prototype.hasOwnProperty.call(plainDto, f)) {
+        delete plainDto[f];
+      }
+    }
     const created = new this.solicitudReclamoModel(plainDto);
     return created.save();
   }
