@@ -3,12 +3,14 @@ import { ReclamoRepository } from './reclamo.repository';
 import { CreateReclamoDto } from './dto/create-reclamo.dto';
 
 import { EstadoReclamoService } from '../estado-reclamo/estado-reclamo.service';
+import { ClienteService } from '../cliente/cliente.service';
 
 @Injectable()
 export class ReclamoService {
     constructor(
         private readonly reclamoRepository: ReclamoRepository,
         private readonly estadoReclamoService: EstadoReclamoService,
+        private readonly clienteService: ClienteService,
     ) { }
 
     async create(createReclamoDto: CreateReclamoDto) {
@@ -21,7 +23,21 @@ export class ReclamoService {
         return this.reclamoRepository.create(createReclamoDto);
     }
 
-    findAll() {
+    async findAll(userId?: string, userRole?: string) {
+        // If user is a client, filter by their cliente ID
+        if (userRole === 'client' && userId) {
+            const cliente = await this.clienteService.findByUsuarioId(userId);
+            console.log(`[ReclamoService] Finding claims for client. UserID: ${userId}, ClientFound: ${!!cliente}`);
+
+            if (cliente) {
+                const results = await this.reclamoRepository.findAll((cliente as any)._id.toString());
+                console.log(`[ReclamoService] Client ID: ${(cliente as any)._id}, Claims found: ${results.length}`);
+                return results;
+            }
+            console.warn(`[ReclamoService] User has 'client' role but no Client record found.`);
+            return []; // No cliente found for this user
+        }
+        // For other roles, return all
         return this.reclamoRepository.findAll();
     }
 

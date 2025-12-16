@@ -23,8 +23,9 @@ export class ReclamoRepository {
         return createdReclamo.save();
     }
 
-    async findAll(): Promise<Reclamo[]> {
-        return this.reclamoModel.find()
+    async findAll(clienteId?: string): Promise<Reclamo[]> {
+        const filter = clienteId ? { cliente: clienteId } : {};
+        return this.reclamoModel.find(filter)
             .populate('cliente')
             .populate('proyecto')
             .exec();

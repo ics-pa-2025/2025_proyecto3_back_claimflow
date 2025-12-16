@@ -1,14 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, BadRequestException, Req } from '@nestjs/common';
 import { ReclamoService } from './reclamo.service';
 import { CreateReclamoDto } from './dto/create-reclamo.dto';
 import { UpdateReclamoDto } from './dto/update-reclamo.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { HttpService } from '@nestjs/axios';
+import { Request } from 'express';
+import { lastValueFrom } from 'rxjs';
 
 @Controller('reclamo')
 export class ReclamoController {
-    constructor(private readonly reclamoService: ReclamoService) { }
+    constructor(
+        private readonly reclamoService: ReclamoService,
+        private readonly httpService: HttpService,
+    ) { }
 
     @Post()
     @UseInterceptors(FileInterceptor('file', {
@@ -28,8 +34,36 @@ export class ReclamoController {
     }
 
     @Get()
-    findAll() {
-        return this.reclamoService.findAll();
+    async findAll(@Req() request: Request) {
+        const authHeader = request.headers.authorization;
+        if (!authHeader) {
+            return this.reclamoService.findAll();
+        }
+
+        try {
+            const token = authHeader.replace('Bearer ', '');
+            // Call auth service to get user info
+            const url = `http://auth-service-claimflow:3001/user/me`;
+            const response = await lastValueFrom(
+                this.httpService.get(url, {
+                    headers: { Authorization: `Bearer ${token}` }
+                })
+            );
+
+
+            const user = response.data;
+            const userRole = user.roles && user.roles.length > 0 ? user.roles[0].name : null;
+
+            console.log('User ID:', user.id);
+            console.log('User Role:', userRole);
+
+            return this.reclamoService.findAll(user.id, userRole);
+        } catch (error) {
+            console.error('Error fetching user info:', error.message);
+            // FAIL CLOSE: If auth fails, DO NOT return all claims
+            // Throw error or return empty
+            throw new BadRequestException('Could not validate user identity');
+        }
     }
 
     @Get(':id')

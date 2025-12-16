@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, ConflictException, Inject, forwardRef, BadRequestException,  } from '@nestjs/common';
+import { Injectable, ConflictException, Inject, forwardRef, BadRequestException, } from '@nestjs/common';
 import { ClienteRepository } from './cliente.repository';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { ProyectoService } from '../proyecto/proyecto.service';
@@ -69,5 +69,9 @@ export class ClienteService {
     async remove(id: string) {
         await this.proyectoService.removeClientFromProjects(id);
         return this.clienteRepository.remove(id);
+    }
+
+    findByUsuarioId(usuarioId: string) {
+        return this.clienteRepository.findByUsuarioId(usuarioId);
     }
 }

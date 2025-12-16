@@ -28,4 +28,8 @@ export class ClienteRepository {
     async remove(id: string): Promise<Cliente | null> {
         return this.clienteModel.findByIdAndUpdate(id, { fechaEliminacion: new Date() }, { new: true }).exec();
     }
+
+    async findByUsuarioId(usuarioId: string): Promise<Cliente | null> {
+        return this.clienteModel.findOne({ usuarioId, fechaEliminacion: null }).exec();
+    }
 }

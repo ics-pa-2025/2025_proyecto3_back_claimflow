@@ -1,5 +1,5 @@
-    
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+
+import { Injectable, NotFoundException, ConflictException, Inject, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Proyecto, ProyectoDocument } from './schemas/proyecto.schema';
@@ -8,12 +8,15 @@ import { CreateProyectoDto } from './dto/create-proyecto.dto';
 import { UpdateProyectoDto } from './dto/update-proyecto.dto';
 
 import { Reclamo, ReclamoDocument } from '../reclamo/schemas/reclamo.schema';
+import { ClienteService } from '../cliente/cliente.service';
 
 @Injectable()
 export class ProyectoService {
     constructor(
         @InjectModel(Proyecto.name) private proyectoModel: Model<ProyectoDocument>,
         @InjectModel(Reclamo.name) private reclamoModel: Model<ReclamoDocument>,
+        @Inject(forwardRef(() => ClienteService))
+        private readonly clienteService: ClienteService,
     ) { }
 
     async create(createProyectoDto: CreateProyectoDto): Promise<Proyecto> {
@@ -28,7 +31,16 @@ export class ProyectoService {
         }
     }
 
-    async findAll(): Promise<Proyecto[]> {
+    async findAll(userId?: string, userRole?: string): Promise<Proyecto[]> {
+        // If user is a client, filter by their cliente ID
+        if (userRole === 'client' && userId) {
+            const cliente = await this.clienteService.findByUsuarioId(userId);
+            if (cliente) {
+                return this.findByCliente((cliente as any)._id.toString());
+            }
+            return []; // No cliente found for this user
+        }
+        // For other roles, return all
         return this.proyectoModel
             .find({ deletedAt: null })
             .populate('tipo')

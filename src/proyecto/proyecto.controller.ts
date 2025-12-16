@@ -1,14 +1,20 @@
 
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ProyectoService } from './proyecto.service';
 import { CreateProyectoDto } from './dto/create-proyecto.dto';
 import { UpdateProyectoDto } from './dto/update-proyecto.dto';
+import { HttpService } from '@nestjs/axios';
+import { Request } from 'express';
+import { lastValueFrom } from 'rxjs';
 
 @ApiTags('proyecto')
 @Controller('proyecto')
 export class ProyectoController {
-    constructor(private readonly proyectoService: ProyectoService) { }
+    constructor(
+        private readonly proyectoService: ProyectoService,
+        private readonly httpService: HttpService,
+    ) { }
 
     @Post()
     @ApiOperation({ summary: 'Create a new Proyecto' })
@@ -20,8 +26,28 @@ export class ProyectoController {
     @Get()
     @ApiOperation({ summary: 'Get all Proyectos' })
     @ApiResponse({ status: 200, description: 'Return all Proyectos.' })
-    findAll() {
-        return this.proyectoService.findAll();
+    async findAll(@Req() request: Request) {
+        const authHeader = request.headers.authorization;
+        if (!authHeader) {
+            return this.proyectoService.findAll();
+        }
+
+        try {
+            const token = authHeader.replace('Bearer ', '');
+            const url = `http://auth-service-claimflow:3001/user/me`;
+            const response = await lastValueFrom(
+                this.httpService.get(url, {
+                    headers: { Authorization: `Bearer ${token}` }
+                })
+            );
+
+            const user = response.data;
+            const userRole = user.roles && user.roles.length > 0 ? user.roles[0].name : null;
+
+            return this.proyectoService.findAll(user.id, userRole);
+        } catch (error) {
+            return this.proyectoService.findAll();
+        }
     }
 
     @Get(':id')
