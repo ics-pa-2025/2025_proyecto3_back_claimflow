@@ -1,25 +1,34 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { ClienteModule } from './cliente/cliente.module';
 import { ReclamoModule } from './reclamo/reclamo.module';
+import { TipoProyectoModule } from './tipo-proyecto/tipo-proyecto.module';
+import { EstadoProyectoModule } from './estado-proyecto/estado-proyecto.module';
+import { ProyectoModule } from './proyecto/proyecto.module';
+import { EstadoReclamoModule } from './estado-reclamo/estado-reclamo.module';
+import { AreaModule } from './area/area.module';
+
+import { SeedModule } from './database/seeders/seed.module';
+import { ConnectionModule } from './database/connection/connection.module';
+import { SolicitudReclamoModule } from './solicitud-reclamo/solicitud-reclamo.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGO_URI'),
-      }),
-      inject: [ConfigService],
-    }),
     ClienteModule,
     ReclamoModule,
+    TipoProyectoModule,
+    EstadoProyectoModule,
+    ProyectoModule,
+    EstadoReclamoModule,
+    AreaModule,
+    SeedModule,
+    ConnectionModule,
+    SolicitudReclamoModule,
   ],
   controllers: [AppController],
   providers: [AppService],

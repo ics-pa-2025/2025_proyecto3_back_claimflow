@@ -16,6 +16,20 @@ export class CreateClienteDto {
     @IsNotEmpty()
     nombre: string;
 
+    @IsString()
+    @IsNotEmpty()
+    apellido: string;
+
+    @IsString()
+    @IsNotEmpty()
+    @IsString()
+    @IsNotEmpty()
+    dni: string;
+
+    @IsString()
+    @IsOptional()
+    usuarioId?: string;
+
     @IsEmail()
     email: string;
 

@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { HydratedDocument, Types, Document } from 'mongoose';
 
-export type ReclamoDocument = HydratedDocument<Reclamo>;
+export type ReclamoDocument = Reclamo & Document;
 
 @Schema()
 export class Historial {
@@ -34,11 +34,11 @@ export class Reclamo {
     @Prop()
     evidencia: string; // URL or path to file
 
-    @Prop({ default: 'Pendiente' })
-    estado: string;
+    @Prop({ type: Types.ObjectId, ref: 'EstadoReclamo' })
+    estado: Types.ObjectId;
 
-    @Prop({ required: true })
-    area: string;
+    @Prop({ type: Types.ObjectId, ref: 'Area', required: true })
+    area: Types.ObjectId;
 
     @Prop({ type: [HistorialSchema], default: [] })
     historial: Historial[];
@@ -46,8 +46,8 @@ export class Reclamo {
     @Prop({ type: Types.ObjectId, ref: 'Cliente', required: true })
     cliente: Types.ObjectId;
 
-    @Prop({ required: true })
-    proyecto: string; // Name of the project, or could be an ID if we had a Project resource
+    @Prop({ type: Types.ObjectId, ref: 'Proyecto', required: true })
+    proyecto: Types.ObjectId;
 }
 
 export const ReclamoSchema = SchemaFactory.createForClass(Reclamo);
