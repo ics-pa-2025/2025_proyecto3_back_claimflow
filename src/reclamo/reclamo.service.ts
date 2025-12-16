@@ -3,6 +3,7 @@ import { ReclamoRepository } from './reclamo.repository';
 import { CreateReclamoDto } from './dto/create-reclamo.dto';
 import { ReclamoStatsDto } from './dto/reclamo-stats.dto';
 import { ReclamoChartDto } from './dto/reclamo-chart.dto';
+import { ReclamoPieChartDto } from './dto/reclamo-pie-chart.dto';
 
 import { EstadoReclamoService } from '../estado-reclamo/estado-reclamo.service';
 import { ClienteService } from '../cliente/cliente.service';
@@ -136,5 +137,18 @@ export class ReclamoService {
         });
 
         return result;
+    }
+
+    async getReclamosPorArea(userId?: string, userRole?: string): Promise<ReclamoPieChartDto> {
+        let clienteId: string | undefined;
+
+        if (userRole === 'client' && userId) {
+            const cliente = await this.clienteService.findByUsuarioId(userId);
+            if (cliente) {
+                clienteId = (cliente as any)._id.toString();
+            }
+        }
+
+        return this.reclamoRepository.getReclamosPorArea(clienteId);
     }
 }

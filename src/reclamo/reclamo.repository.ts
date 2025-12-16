@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Reclamo, ReclamoDocument } from './schemas/reclamo.schema';
 import { CreateReclamoDto } from './dto/create-reclamo.dto';
 
@@ -102,7 +102,7 @@ export class ReclamoRepository {
         };
 
         if (clienteId) {
-            matchStage.cliente = clienteId; // Will be cast to ObjectId by Mongoose if defined in schema as ObjectId
+            matchStage.cliente = new Types.ObjectId(clienteId);
         }
 
         return this.reclamoModel.aggregate([
@@ -122,4 +122,49 @@ export class ReclamoRepository {
             },
         ]).exec();
     }
+
+    async getReclamosPorArea(clienteId?: string): Promise<{ name: string; value: number }[]> {
+        const matchStage: any = {};
+
+        if (clienteId) {
+            matchStage.clienteObjId = new Types.ObjectId(clienteId);
+        }
+
+        const results = await this.reclamoModel.aggregate([
+            {
+                $addFields: {
+                    areaObjId: { $toObjectId: '$area' },
+                    clienteObjId: { $toObjectId: '$cliente' }
+                }
+            },
+            { $match: matchStage },
+            {
+                $group: {
+                    _id: '$areaObjId',
+                    count: { $sum: 1 },
+                },
+            },
+            {
+                $lookup: {
+                    from: 'areas', // Collection name for areas
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'areaInfo',
+                },
+            },
+            {
+                $unwind: '$areaInfo',
+            },
+            {
+                $project: {
+                    _id: 0,
+                    name: '$areaInfo.nombre',
+                    value: '$count',
+                },
+            },
+        ]).exec();
+
+        return results;
+    }
 }
+
