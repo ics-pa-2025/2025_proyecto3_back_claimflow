@@ -50,6 +50,16 @@ export class ReclamoService {
     }
 
     async update(id: string, updateReclamoDto: any) {
+        if (updateReclamoDto.estado) {
+            const estadoResuelto = await this.estadoReclamoService.findByNombre(EstadoReclamoEnum.RESUELTO);
+            if (estadoResuelto && updateReclamoDto.estado === (estadoResuelto as any)._id.toString()) {
+                const estadoCerrado = await this.estadoReclamoService.findByNombre(EstadoReclamoEnum.CERRADO);
+                if (estadoCerrado) {
+                    updateReclamoDto.estado = (estadoCerrado as any)._id.toString();
+                    console.log('[ReclamoService] Auto-transitioning status from Resuelto to Cerrado');
+                }
+            }
+        }
         // If there's a historial entry to add, append it to the existing historial
         if (updateReclamoDto.newHistorialEntry) {
             const newEntry = {
