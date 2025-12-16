@@ -13,6 +13,7 @@ import { AreaModule } from './area/area.module';
 import { SeedModule } from './database/seeders/seed.module';
 import { ConnectionModule } from './database/connection/connection.module';
 import { SolicitudReclamoModule } from './solicitud-reclamo/solicitud-reclamo.module';
+import { MensajeModule } from './mensaje/mensaje.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { SolicitudReclamoModule } from './solicitud-reclamo/solicitud-reclamo.mo
     SeedModule,
     ConnectionModule,
     SolicitudReclamoModule,
+    MensajeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

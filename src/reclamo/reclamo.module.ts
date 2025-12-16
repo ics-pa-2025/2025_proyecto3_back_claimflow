@@ -19,5 +19,6 @@ import { HttpModule } from '@nestjs/axios';
     ],
     controllers: [ReclamoController],
     providers: [ReclamoService, ReclamoRepository],
+    exports: [ReclamoService],
 })
 export class ReclamoModule { }
