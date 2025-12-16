@@ -102,10 +102,15 @@ export class ReclamoRepository {
         };
 
         if (clienteId) {
-            matchStage.cliente = new Types.ObjectId(clienteId);
+            matchStage.clienteObjId = new Types.ObjectId(clienteId);
         }
 
         return this.reclamoModel.aggregate([
+            {
+                $addFields: {
+                    clienteObjId: { $toObjectId: '$cliente' }
+                }
+            },
             { $match: matchStage },
             {
                 $group: {
