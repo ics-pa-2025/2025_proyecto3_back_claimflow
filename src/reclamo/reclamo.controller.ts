@@ -33,6 +33,33 @@ export class ReclamoController {
         return this.reclamoService.create(createReclamoDto);
     }
 
+    @Get('dashboard/stats')
+    async getDashboardStats(@Req() request: Request) {
+        const authHeader = request.headers.authorization;
+        let userId: string | undefined;
+        let userRole: string | undefined;
+
+        if (authHeader) {
+            try {
+                const token = authHeader.replace('Bearer ', '');
+                const url = `http://auth-service-claimflow:3001/user/me`;
+                const response = await lastValueFrom(
+                    this.httpService.get(url, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    })
+                );
+                const user = response.data;
+                userId = user.id;
+                userRole = user.roles && user.roles.length > 0 ? user.roles[0].name : null;
+            } catch (error) {
+                console.error('Error fetching user info for stats:', error.message);
+                // Optionally handle error, e.g., proceed as guest or throw
+            }
+        }
+
+        return this.reclamoService.getDashboardStats(userId, userRole);
+    }
+
     @Get()
     async findAll(@Req() request: Request) {
         const authHeader = request.headers.authorization;

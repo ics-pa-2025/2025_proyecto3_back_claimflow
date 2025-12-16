@@ -17,7 +17,7 @@ export class Historial {
 
 const HistorialSchema = SchemaFactory.createForClass(Historial);
 
-@Schema()
+@Schema({ timestamps: true })
 export class Reclamo {
     @Prop({ required: true })
     tipo: string;

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ReclamoRepository } from './reclamo.repository';
 import { CreateReclamoDto } from './dto/create-reclamo.dto';
+import { ReclamoStatsDto } from './dto/reclamo-stats.dto';
 
 import { EstadoReclamoService } from '../estado-reclamo/estado-reclamo.service';
 import { ClienteService } from '../cliente/cliente.service';
@@ -63,5 +64,34 @@ export class ReclamoService {
 
     remove(id: string) {
         return this.reclamoRepository.remove(id);
+    }
+
+    async getDashboardStats(userId?: string, userRole?: string): Promise<ReclamoStatsDto> {
+        let clienteId: string | undefined;
+
+        if (userRole === 'client' && userId) {
+            const cliente = await this.clienteService.findByUsuarioId(userId);
+            if (cliente) {
+                clienteId = (cliente as any)._id.toString();
+            }
+        }
+
+        const stats = await this.reclamoRepository.getStats(clienteId);
+
+        let growthPercentage = 0;
+        if (stats.lastMonth > 0) {
+            growthPercentage = ((stats.thisMonth - stats.lastMonth) / stats.lastMonth) * 100;
+        } else if (stats.thisMonth > 0) {
+            growthPercentage = 100; // 100% growth if prev month was 0 and this month > 0
+        }
+
+        const formattedPercentage = growthPercentage.toFixed(1);
+        const sign = growthPercentage >= 0 ? '+' : '';
+
+        return {
+            totalReclamos: stats.total,
+            porcentajeCrecimiento: `${sign}${formattedPercentage}%`,
+            diferenciaMesAnterior: `${sign}${formattedPercentage}% mes anterior`,
+        };
     }
 }

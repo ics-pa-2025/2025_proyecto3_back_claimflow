@@ -44,7 +44,7 @@ export class ReclamoRepository {
 
     async update(id: string, updateReclamoDto: any): Promise<Reclamo | null> {
         let updateOperation: any = {};
-        
+
         // If historial array is provided, use $push to add the new entry
         if (updateReclamoDto.historial && Array.isArray(updateReclamoDto.historial)) {
             // Get the last element (the new one to add)
@@ -52,10 +52,10 @@ export class ReclamoRepository {
             updateOperation.$push = { historial: newEntry };
             delete updateReclamoDto.historial;
         }
-        
+
         // Add other fields to update
         updateOperation = { ...updateOperation, ...updateReclamoDto };
-        
+
         return this.reclamoModel.findByIdAndUpdate(id, updateOperation, { new: true })
             .populate('cliente')
             .populate('proyecto')
@@ -66,5 +66,28 @@ export class ReclamoRepository {
 
     async remove(id: string): Promise<Reclamo | null> {
         return this.reclamoModel.findByIdAndDelete(id).exec();
+    }
+
+    async getStats(clienteId?: string): Promise<{ total: number; thisMonth: number; lastMonth: number }> {
+        const now = new Date();
+        const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+
+        const baseFilter = clienteId ? { cliente: clienteId } : {};
+
+        const total = await this.reclamoModel.countDocuments(baseFilter).exec();
+
+        const thisMonth = await this.reclamoModel.countDocuments({
+            ...baseFilter,
+            createdAt: { $gte: startOfThisMonth },
+        }).exec();
+
+        const lastMonth = await this.reclamoModel.countDocuments({
+            ...baseFilter,
+            createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth },
+        }).exec();
+
+        return { total, thisMonth, lastMonth };
     }
 }
