@@ -15,6 +15,7 @@ import { UnauthorizedException, Logger } from '@nestjs/common';
 interface AuthenticatedSocket extends Socket {
     userId?: string;
     userRole?: string;
+    userName?: string;
 }
 
 @WebSocketGateway({
@@ -44,8 +45,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             // In production, validate JWT token here
             client.userId = client.handshake.auth.userId;
             client.userRole = client.handshake.auth.userRole;
+            client.userName = client.handshake.auth.userName;
 
-            this.logger.log(`Client connected: ${client.id}, userId: ${client.userId}`);
+            this.logger.log(`Client connected: ${client.id}, userId: ${client.userId}, userName: ${client.userName}`);
         } catch (error) {
             this.logger.error(`Connection error: ${error.message}`);
             client.disconnect();
@@ -101,7 +103,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             const mensaje = await this.mensajeService.create(
                 createMensajeDto,
                 client.userId,
-                client.userRole
+                client.userRole,
+                client.userName
             );
 
             // Broadcast to room

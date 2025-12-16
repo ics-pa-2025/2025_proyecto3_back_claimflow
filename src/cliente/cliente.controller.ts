@@ -1,10 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, forwardRef } from '@nestjs/common';
 import { ClienteService } from './cliente.service';
 import { CreateClienteDto } from './dto/create-cliente.dto';
+import { ProyectoService } from '../proyecto/proyecto.service';
 
 @Controller('cliente')
 export class ClienteController {
-    constructor(private readonly clienteService: ClienteService) { }
+    constructor(
+        private readonly clienteService: ClienteService,
+        @Inject(forwardRef(() => ProyectoService))
+        private readonly proyectoService: ProyectoService,
+    ) { }
 
     @Post()
     create(@Body() createClienteDto: CreateClienteDto) {
@@ -29,5 +34,10 @@ export class ClienteController {
     @Delete(':id')
     remove(@Param('id') id: string) {
         return this.clienteService.remove(id);
+    }
+
+    @Get(':id/proyectos')
+    getProjects(@Param('id') id: string) {
+        return this.proyectoService.findByCliente(id);
     }
 }

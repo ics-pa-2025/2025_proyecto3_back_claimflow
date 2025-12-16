@@ -12,8 +12,8 @@ export class SolicitudReclamo extends Document {
   @Prop({ type: [String], default: [] })
   evidencia: string[];
 
-  @Prop({ type: Types.ObjectId, ref: 'Area', required: true })
-  area: Types.ObjectId;
+  @Prop({ type: Types.ObjectId, ref: 'Area', required: false, default: null })
+  area: Types.ObjectId | null;
 
   @Prop({ type: Types.ObjectId, ref: 'Cliente', required: true })
   cliente: Types.ObjectId;

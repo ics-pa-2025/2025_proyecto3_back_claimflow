@@ -125,4 +125,20 @@ export class ProyectoService {
             .populate({ path: 'clienteId', model: 'Cliente' })
             .exec();
     }
+
+    async findActiveByCliente(clienteId: string): Promise<Proyecto[]> {
+        const objectId = MongooseTypes.ObjectId.isValid(clienteId) ? new MongooseTypes.ObjectId(clienteId) : clienteId;
+        const proyectos = await this.proyectoModel
+            .find({ clienteId: objectId, deletedAt: null })
+            .populate('tipo')
+            .populate({ path: 'estado', select: 'nombre descripcion' })
+            .populate({ path: 'clienteId', model: 'Cliente' })
+            .exec();
+        
+        // Filter only active projects (estado nombre is "Activo" or similar)
+        return proyectos.filter(proyecto => {
+            const estadoNombre = (proyecto.estado as any)?.nombre?.toLowerCase();
+            return estadoNombre === 'activo' || estadoNombre === 'en proceso' || estadoNombre === 'en progreso';
+        });
+    }
 }

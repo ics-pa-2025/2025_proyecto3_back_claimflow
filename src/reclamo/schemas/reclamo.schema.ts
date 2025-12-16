@@ -17,15 +17,15 @@ export class Historial {
 
 const HistorialSchema = SchemaFactory.createForClass(Historial);
 
-@Schema()
+@Schema({ timestamps: true })
 export class Reclamo {
     @Prop({ required: true })
     tipo: string;
 
-    @Prop({ required: true })
+    @Prop({ required: false, default: 'Normal' })
     prioridad: string;
 
-    @Prop({ required: true })
+    @Prop({ required: false, default: 'Media' })
     criticidad: string;
 
     @Prop({ required: true })
@@ -37,8 +37,8 @@ export class Reclamo {
     @Prop({ type: Types.ObjectId, ref: 'EstadoReclamo' })
     estado: Types.ObjectId;
 
-    @Prop({ type: Types.ObjectId, ref: 'Area', required: true })
-    area: Types.ObjectId;
+    @Prop({ type: Types.ObjectId, ref: 'Area', required: false, default: null })
+    area: Types.ObjectId | null;
 
     @Prop({ type: [HistorialSchema], default: [] })
     historial: Historial[];
