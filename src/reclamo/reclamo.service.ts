@@ -45,7 +45,19 @@ export class ReclamoService {
         return this.reclamoRepository.findOne(id);
     }
 
-    update(id: string, updateReclamoDto: any) {
+    async update(id: string, updateReclamoDto: any) {
+        // If there's a historial entry to add, append it to the existing historial
+        if (updateReclamoDto.newHistorialEntry) {
+            const newEntry = {
+                fecha: new Date(),
+                accion: updateReclamoDto.newHistorialEntry.accion,
+                responsable: updateReclamoDto.newHistorialEntry.responsable,
+            };
+            console.log('[ReclamoService] Adding to historial:', newEntry);
+            // Pass the new entry as an array with one element for $push
+            updateReclamoDto.historial = [newEntry];
+            delete updateReclamoDto.newHistorialEntry;
+        }
         return this.reclamoRepository.update(id, updateReclamoDto);
     }
 

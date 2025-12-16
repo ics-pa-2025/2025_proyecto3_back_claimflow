@@ -43,7 +43,25 @@ export class ReclamoRepository {
     }
 
     async update(id: string, updateReclamoDto: any): Promise<Reclamo | null> {
-        return this.reclamoModel.findByIdAndUpdate(id, updateReclamoDto, { new: true }).exec();
+        let updateOperation: any = {};
+        
+        // If historial array is provided, use $push to add the new entry
+        if (updateReclamoDto.historial && Array.isArray(updateReclamoDto.historial)) {
+            // Get the last element (the new one to add)
+            const newEntry = updateReclamoDto.historial[updateReclamoDto.historial.length - 1];
+            updateOperation.$push = { historial: newEntry };
+            delete updateReclamoDto.historial;
+        }
+        
+        // Add other fields to update
+        updateOperation = { ...updateOperation, ...updateReclamoDto };
+        
+        return this.reclamoModel.findByIdAndUpdate(id, updateOperation, { new: true })
+            .populate('cliente')
+            .populate('proyecto')
+            .populate({ path: 'estado', select: 'nombre descripcion color' })
+            .populate({ path: 'area', select: 'nombre descripcion' })
+            .exec();
     }
 
     async remove(id: string): Promise<Reclamo | null> {
