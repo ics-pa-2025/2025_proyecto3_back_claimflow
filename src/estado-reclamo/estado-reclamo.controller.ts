@@ -1,8 +1,10 @@
+import { ApiTags } from '@nestjs/swagger';
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { EstadoReclamoService } from './estado-reclamo.service';
 import { CreateEstadoReclamoDto } from './dto/create-estado-reclamo.dto';
 import { UpdateEstadoReclamoDto } from './dto/update-estado-reclamo.dto';
 
+@ApiTags('estado-reclamo')
 @Controller('estado-reclamo')
 export class EstadoReclamoController {
     constructor(private readonly estadoReclamoService: EstadoReclamoService) { }

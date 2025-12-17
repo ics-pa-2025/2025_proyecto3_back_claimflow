@@ -1,3 +1,4 @@
+import { ApiTags } from '@nestjs/swagger';
 import {
     Controller,
     Post,
@@ -14,6 +15,7 @@ import { Response } from 'express';
 import { ArchivoService } from './archivo.service';
 import * as fs from 'fs';
 
+@ApiTags('archivo')
 @Controller('archivo')
 export class ArchivoController {
     constructor(private readonly archivoService: ArchivoService) { }

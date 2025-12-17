@@ -6,7 +6,9 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { HttpService } from '@nestjs/axios';
 import { Request } from 'express';
 import { lastValueFrom } from 'rxjs';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
+@ApiTags('reclamo')
 @Controller('reclamo')
 export class ReclamoController {
     constructor(

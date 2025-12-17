@@ -1,4 +1,3 @@
-
 import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ProyectoService } from './proyecto.service';

@@ -1,8 +1,10 @@
+import { ApiTags } from '@nestjs/swagger';
 import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, forwardRef } from '@nestjs/common';
 import { ClienteService } from './cliente.service';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { ProyectoService } from '../proyecto/proyecto.service';
 
+@ApiTags('cliente')
 @Controller('cliente')
 export class ClienteController {
     constructor(

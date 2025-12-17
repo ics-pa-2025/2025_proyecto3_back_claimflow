@@ -1,3 +1,4 @@
+import { ApiTags } from '@nestjs/swagger';
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -6,6 +7,7 @@ import { SolicitudReclamoService } from './solicitud-reclamo.service';
 import { CreateSolicitudReclamoDto } from './dto/create-solicitud-reclamo.dto';
 import { UpdateSolicitudReclamoDto } from './dto/update-solicitud-reclamo.dto';
 
+@ApiTags('solicitud-reclamo')
 @Controller('solicitud-reclamo')
 export class SolicitudReclamoController {
   constructor(private readonly solicitudReclamoService: SolicitudReclamoService) { }
