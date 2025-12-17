@@ -272,5 +272,69 @@ export class ReclamoRepository {
 
         return results;
     }
+
+    async getReclamosPorResponsable(clienteId?: string, cerradoId?: string): Promise<any[]> {
+        const matchStage: any = {};
+
+        if (clienteId) {
+            matchStage.clienteObjId = new Types.ObjectId(clienteId);
+        }
+
+        // Only claims with responsables assigned
+        matchStage.responsables = { $exists: true, $ne: [] };
+
+        const results = await this.reclamoModel.aggregate([
+            {
+                $addFields: {
+                    estadoObjId: { $toObjectId: '$estado' },
+                    clienteObjId: { $toObjectId: '$cliente' }
+                }
+            },
+            { $match: matchStage },
+            // Unwind responsables array to get one document per responsable
+            { $unwind: '$responsables' },
+            {
+                $group: {
+                    _id: '$responsables',
+                    asignados: { $sum: 1 }, // Total claims assigned
+                    enProceso: {
+                        $sum: {
+                            $cond: [
+                                cerradoId
+                                    ? { $ne: ['$estadoObjId', new Types.ObjectId(cerradoId)] }
+                                    : true,
+                                1,
+                                0
+                            ]
+                        }
+                    },
+                    resueltos: {
+                        $sum: {
+                            $cond: [
+                                cerradoId
+                                    ? { $eq: ['$estadoObjId', new Types.ObjectId(cerradoId)] }
+                                    : false,
+                                1,
+                                0
+                            ]
+                        }
+                    }
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    responsable: '$_id',
+                    asignados: 1,
+                    enProceso: 1,
+                    resueltos: 1
+                },
+            },
+            { $sort: { asignados: -1 } },
+            { $limit: 10 } // Top 10 responsables
+        ]).exec();
+
+        return results;
+    }
 }
 

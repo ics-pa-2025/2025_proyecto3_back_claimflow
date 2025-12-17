@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom, catchError, of } from 'rxjs';
 import { ReclamoRepository } from './reclamo.repository';
 import { CreateReclamoDto } from './dto/create-reclamo.dto';
 import { ReclamoStatsDto } from './dto/reclamo-stats.dto';
@@ -15,6 +17,7 @@ export class ReclamoService {
         private readonly reclamoRepository: ReclamoRepository,
         private readonly estadoReclamoService: EstadoReclamoService,
         private readonly clienteService: ClienteService,
+        private readonly httpService: HttpService,
     ) { }
 
     async create(createReclamoDto: CreateReclamoDto) {
@@ -180,5 +183,53 @@ export class ReclamoService {
         }
 
         return this.reclamoRepository.getReclamosPorTipo(clienteId);
+    }
+
+    async getReclamosPorResponsable(userId?: string, userRole?: string): Promise<any[]> {
+        let clienteId: string | undefined;
+
+        if (userRole === 'client' && userId) {
+            const cliente = await this.clienteService.findByUsuarioId(userId);
+            if (cliente) {
+                clienteId = (cliente as any)._id.toString();
+            }
+        }
+
+        // Get estado Cerrado ID for filtering
+        const estadoCerrado = await this.estadoReclamoService.findByNombre(EstadoReclamoEnum.CERRADO);
+        const cerradoId = estadoCerrado ? (estadoCerrado as any)._id.toString() : undefined;
+
+        const data = await this.reclamoRepository.getReclamosPorResponsable(clienteId, cerradoId);
+
+        // Fetch all users from auth service once for efficient mapping
+        try {
+            const url = `http://auth-service-claimflow:3001/user`;
+            const response = await lastValueFrom(
+                this.httpService.get(url).pipe(
+                    catchError((error) => {
+                        console.error('Error fetching users from auth service:', error.message);
+                        return of({ data: [] });
+                    })
+                )
+            );
+
+            const users = response.data || [];
+
+            // Create a map of userId -> userName
+            const userMap = new Map<string, string>();
+            users.forEach((user: any) => {
+                const userName = user.fullname || user.email || user.id;
+                userMap.set(user.id, userName);
+            });
+
+            // Map responsable IDs to names
+            return data.map((item) => ({
+                ...item,
+                responsable: userMap.get(item.responsable) || item.responsable
+            }));
+        } catch (error) {
+            console.error('Error enriching responsable data:', error.message);
+            return data; // Return original data if enrichment fails
+        }
     }
 }
