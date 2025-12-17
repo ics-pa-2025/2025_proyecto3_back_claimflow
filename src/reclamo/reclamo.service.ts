@@ -110,6 +110,7 @@ export class ReclamoService {
             diferenciaMesAnterior: `${sign}${formattedPercentage}% mes anterior`,
             reclamosEnProceso: stats.inProcess,
             reclamosFinalizados: stats.closed,
+            avgResolutionDays: stats.avgResolutionDays || 0,
         };
     }
 

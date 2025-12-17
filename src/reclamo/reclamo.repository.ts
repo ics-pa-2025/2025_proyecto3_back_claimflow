@@ -71,7 +71,7 @@ export class ReclamoRepository {
         return this.reclamoModel.findByIdAndDelete(id).exec();
     }
 
-    async getStats(clienteId?: string, cerradoId?: string): Promise<{ total: number; thisMonth: number; lastMonth: number; closed: number; inProcess: number }> {
+    async getStats(clienteId?: string, cerradoId?: string): Promise<{ total: number; thisMonth: number; lastMonth: number; closed: number; inProcess: number; avgResolutionDays: number }> {
         const now = new Date();
         const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
         const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -112,6 +112,20 @@ export class ReclamoRepository {
                     inProcess: [
                         { $match: cerradoId ? { estadoObjId: { $ne: new Types.ObjectId(cerradoId) } } : {} },
                         { $count: 'count' }
+                    ],
+                    // Calculate average resolution time (in milliseconds) for closed reclamos
+                    avgResolution: [
+                        { $match: cerradoId ? { estadoObjId: new Types.ObjectId(cerradoId) } : {} },
+                        // Ensure historial has at least one entry
+                        { $match: { $expr: { $gt: [{ $size: { $ifNull: ['$historial', []] } }, 0] } } },
+                        { $addFields: { firstHistDate: { $arrayElemAt: ['$historial.fecha', 0] } } },
+                        { $addFields: { resolutionMillis: { $subtract: [{ $toDate: '$updatedAt' }, { $toDate: '$firstHistDate' }] } } },
+                        {
+                            $group: {
+                                _id: null,
+                                avgMillis: { $avg: '$resolutionMillis' }
+                            }
+                        }
                     ]
                 }
             }
@@ -120,12 +134,16 @@ export class ReclamoRepository {
         const results = await this.reclamoModel.aggregate(statsPipeline).exec();
         const stats = results[0];
 
+        const avgMillis = stats.avgResolution && stats.avgResolution[0] ? stats.avgResolution[0].avgMillis : null;
+        const avgDays = avgMillis ? (avgMillis / (1000 * 60 * 60 * 24)) : 0;
+
         return {
             total: stats.total[0]?.count || 0,
             thisMonth: stats.thisMonth[0]?.count || 0,
             lastMonth: stats.lastMonth[0]?.count || 0,
             closed: stats.closed[0]?.count || 0,
-            inProcess: stats.inProcess[0]?.count || 0
+            inProcess: stats.inProcess[0]?.count || 0,
+            avgResolutionDays: Number(avgDays.toFixed(2))
         };
     }
 
