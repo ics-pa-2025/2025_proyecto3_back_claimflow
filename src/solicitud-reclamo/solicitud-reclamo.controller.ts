@@ -8,7 +8,7 @@ import { UpdateSolicitudReclamoDto } from './dto/update-solicitud-reclamo.dto';
 
 @Controller('solicitud-reclamo')
 export class SolicitudReclamoController {
-  constructor(private readonly solicitudReclamoService: SolicitudReclamoService) {}
+  constructor(private readonly solicitudReclamoService: SolicitudReclamoService) { }
 
 
   @Post()
@@ -30,7 +30,7 @@ export class SolicitudReclamoController {
     if (files && files.length > 0) {
       createSolicitudReclamoDto.evidencia = files.map(f => f.filename);
     }
-    return this.solicitudReclamoService.create(createSolicitudReclamoDto);
+    return this.solicitudReclamoService.create(createSolicitudReclamoDto, files);
   }
 
   @Get()
