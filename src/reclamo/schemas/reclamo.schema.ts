@@ -48,6 +48,9 @@ export class Reclamo {
 
     @Prop({ type: Types.ObjectId, ref: 'Proyecto', required: true })
     proyecto: Types.ObjectId;
+
+    @Prop({ type: [String], default: [] })
+    responsables: string[];
 }
 
 export const ReclamoSchema = SchemaFactory.createForClass(Reclamo);

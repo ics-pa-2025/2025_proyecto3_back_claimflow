@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional, IsMongoId } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsMongoId, IsArray } from 'class-validator';
 
 export class CreateReclamoDto {
     @IsMongoId()
@@ -36,4 +36,9 @@ export class CreateReclamoDto {
     @IsMongoId()
     @IsOptional()
     estado?: string;
+
+    @IsArray()
+    @IsString({ each: true })
+    @IsOptional()
+    responsables?: string[];
 }
