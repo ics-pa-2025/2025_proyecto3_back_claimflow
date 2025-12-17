@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ReclamoService } from './reclamo.service';
 import { ReclamoController } from './reclamo.controller';

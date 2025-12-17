@@ -29,6 +29,7 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
+      - uploads-data:/app/uploads
     command: sh -c "npm install && npm run start:dev"
     networks:
       - microservices
@@ -53,6 +54,7 @@ services:
 volumes:
   mongo_data:
   mongo_config:
+  uploads-data:
 
 networks:
   microservices:
