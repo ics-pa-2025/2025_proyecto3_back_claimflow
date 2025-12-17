@@ -209,5 +209,50 @@ export class ReclamoRepository {
 
         return results;
     }
+
+    async getReclamosPorTipo(clienteId?: string): Promise<{ name: string; value: number }[]> {
+        const matchStage: any = {};
+
+        if (clienteId) {
+            matchStage.clienteObjId = new Types.ObjectId(clienteId);
+        }
+
+        const results = await this.reclamoModel.aggregate([
+            {
+                $addFields: {
+                    tipoObjId: { $toObjectId: '$tipo' },
+                    clienteObjId: { $toObjectId: '$cliente' }
+                }
+            },
+            { $match: matchStage },
+            {
+                $group: {
+                    _id: '$tipoObjId',
+                    count: { $sum: 1 },
+                },
+            },
+            {
+                $lookup: {
+                    from: 'tiporeclamos',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'tipoInfo',
+                },
+            },
+            {
+                $unwind: { path: '$tipoInfo', preserveNullAndEmptyArrays: true },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    name: { $ifNull: ['$tipoInfo.nombre', 'Sin tipo'] },
+                    value: '$count',
+                },
+            },
+            { $sort: { value: -1 } }
+        ]).exec();
+
+        return results;
+    }
 }
 
