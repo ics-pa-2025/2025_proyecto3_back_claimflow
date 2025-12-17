@@ -4,4 +4,5 @@ export class ReclamoStatsDto {
     diferenciaMesAnterior: string;
     reclamosEnProceso: number;
     reclamosFinalizados: number;
+    avgResolutionDays: number;
 }

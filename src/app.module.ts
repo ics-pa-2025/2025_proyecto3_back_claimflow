@@ -15,6 +15,7 @@ import { ConnectionModule } from './database/connection/connection.module';
 import { SolicitudReclamoModule } from './solicitud-reclamo/solicitud-reclamo.module';
 import { MensajeModule } from './mensaje/mensaje.module';
 import { TipoReclamoModule } from './tipo-reclamo/tipo-reclamo.module';
+import { ArchivoModule } from './archivo/archivo.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { TipoReclamoModule } from './tipo-reclamo/tipo-reclamo.module';
     ConnectionModule,
     SolicitudReclamoModule,
     MensajeModule,
+    ArchivoModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -110,6 +110,7 @@ export class ReclamoService {
             diferenciaMesAnterior: `${sign}${formattedPercentage}% mes anterior`,
             reclamosEnProceso: stats.inProcess,
             reclamosFinalizados: stats.closed,
+            avgResolutionDays: stats.avgResolutionDays || 0,
         };
     }
 
@@ -166,5 +167,18 @@ export class ReclamoService {
         }
 
         return this.reclamoRepository.getReclamosPorArea(clienteId);
+    }
+
+    async getReclamosPorTipo(userId?: string, userRole?: string): Promise<ReclamoPieChartDto> {
+        let clienteId: string | undefined;
+
+        if (userRole === 'client' && userId) {
+            const cliente = await this.clienteService.findByUsuarioId(userId);
+            if (cliente) {
+                clienteId = (cliente as any)._id.toString();
+            }
+        }
+
+        return this.reclamoRepository.getReclamosPorTipo(clienteId);
     }
 }

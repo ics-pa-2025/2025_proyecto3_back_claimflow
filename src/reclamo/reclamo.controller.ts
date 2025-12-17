@@ -1,10 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, BadRequestException, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { ReclamoService } from './reclamo.service';
 import { CreateReclamoDto } from './dto/create-reclamo.dto';
 import { UpdateReclamoDto } from './dto/update-reclamo.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
 import { HttpService } from '@nestjs/axios';
 import { Request } from 'express';
 import { lastValueFrom } from 'rxjs';
@@ -17,19 +15,9 @@ export class ReclamoController {
     ) { }
 
     @Post()
-    @UseInterceptors(FileInterceptor('file', {
-        storage: diskStorage({
-            destination: './uploads',
-            filename: (req, file, cb) => {
-                const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('');
-                return cb(null, `${randomName}${extname(file.originalname)}`);
-            }
-        })
-    }))
+    @UseInterceptors(FileInterceptor('file')) // Accept FormData but ignore file - files handled by ArchivoModule
     create(@Body() createReclamoDto: CreateReclamoDto, @UploadedFile() file?: any) {
-        if (file) {
-            createReclamoDto.evidencia = file.path;
-        }
+        // File is ignored, files are now managed separately via /archivo endpoints
         return this.reclamoService.create(createReclamoDto);
     }
 
@@ -112,6 +100,32 @@ export class ReclamoController {
         return this.reclamoService.getReclamosPorArea(userId, userRole);
     }
 
+    @Get('dashboard/chart-tipos')
+    async getChartTipos(@Req() request: Request) {
+        const authHeader = request.headers.authorization;
+        let userId: string | undefined;
+        let userRole: string | undefined;
+
+        if (authHeader) {
+            try {
+                const token = authHeader.replace('Bearer ', '');
+                const url = `http://auth-service-claimflow:3001/user/me`;
+                const response = await lastValueFrom(
+                    this.httpService.get(url, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    })
+                );
+                const user = response.data;
+                userId = user.id;
+                userRole = user.roles && user.roles.length > 0 ? user.roles[0].name : null;
+            } catch (error) {
+                console.error('Error fetching user info for tipos chart:', error.message);
+            }
+        }
+
+        return this.reclamoService.getReclamosPorTipo(userId, userRole);
+    }
+
     @Get()
     async findAll(@Req() request: Request) {
         const authHeader = request.headers.authorization;
@@ -150,19 +164,9 @@ export class ReclamoController {
     }
 
     @Patch(':id')
-    @UseInterceptors(FileInterceptor('file', {
-        storage: diskStorage({
-            destination: './uploads',
-            filename: (req, file, cb) => {
-                const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('');
-                return cb(null, `${randomName}${extname(file.originalname)}`);
-            }
-        })
-    }))
+    @UseInterceptors(FileInterceptor('file')) // Accept FormData but ignore file - files handled by ArchivoModule
     update(@Param('id') id: string, @Body() updateReclamoDto: UpdateReclamoDto, @UploadedFile() file?: any) {
-        if (file) {
-            updateReclamoDto.evidencia = file.path;
-        }
+        // File is ignored, files are now managed separately via /archivo endpoints
         return this.reclamoService.update(id, updateReclamoDto);
     }
 

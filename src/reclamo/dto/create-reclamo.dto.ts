@@ -17,10 +17,6 @@ export class CreateReclamoDto {
     @IsNotEmpty()
     descripcion: string;
 
-    @IsString()
-    @IsOptional()
-    evidencia?: string;
-
     @IsMongoId()
     @IsOptional()
     area?: string;

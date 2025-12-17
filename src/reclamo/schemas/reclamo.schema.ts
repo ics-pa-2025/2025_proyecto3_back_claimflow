@@ -31,8 +31,8 @@ export class Reclamo {
     @Prop({ required: true })
     descripcion: string;
 
-    @Prop()
-    evidencia: string; // URL or path to file
+    @Prop({ type: [{ type: Types.ObjectId, ref: 'Archivo' }], default: [] })
+    archivos: Types.ObjectId[];
 
     @Prop({ type: Types.ObjectId, ref: 'EstadoReclamo' })
     estado: Types.ObjectId;

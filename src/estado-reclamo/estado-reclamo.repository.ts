@@ -39,10 +39,15 @@ export class EstadoReclamoRepository {
     }
 
     async remove(id: string): Promise<EstadoReclamo> {
-        const deletedEstado = await this.estadoReclamoModel.findByIdAndDelete(id).exec();
-        if (!deletedEstado) {
+        // Soft-delete: mark as inactive instead of removing from DB
+        const updatedEstado = await this.estadoReclamoModel.findByIdAndUpdate(
+            id,
+            { activo: false },
+            { new: true }
+        ).exec();
+        if (!updatedEstado) {
             throw new NotFoundException(`EstadoReclamo with ID ${id} not found`);
         }
-        return deletedEstado;
+        return updatedEstado;
     }
 }
